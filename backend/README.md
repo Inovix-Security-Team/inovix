@@ -39,7 +39,7 @@ The Inovix backend provides a clean, versioned API layer between the frontend an
 | --------------- | --------------------------------- |
 | **Task ID**     | `BASIT-TASK-001`                  |
 | **Task**        | Backend Foundation & API Skeleton |
-| **Developer**   | Basit                             |
+| **Developer**   | Abdul Basit                             |
 | **Framework**   | FastAPI                           |
 | **API Version** | `v1`                              |
 | **Branch**      | `feature/backend-foundation`      |
