@@ -1,5 +1,4 @@
 # Inovix Development Setup
-
 ## Overview
 
 This document provides the initial development setup guidance for the Inovix project.
@@ -10,7 +9,6 @@ This document should be updated as the development team confirms the technologie
 
 
 ## Required Tools
-
 The exact development tools and dependencies may vary depending on the final technology stack selected for each component.
 
 At a minimum, developers may require:
@@ -22,7 +20,7 @@ At a minimum, developers may require:
 
 Additional tools and version requirements should be documented once the technology stack for each component is finalized.
 
-**Status: To Be Finalized (TBD)**
+*Status: To Be Finalized (TBD)*
 
 
 ## Repository Setup
@@ -39,26 +37,21 @@ The general setup process is:
 
 The exact repository URL and any additional access requirements should be provided by the project team.
 
-**Status: To Be Finalized (TBD)**
+*Status: To Be Finalized (TBD)*
 
 
 ## Cloning the Repository
 
 After obtaining access to the Inovix repository, developers can create a local copy using Git.
 
-The general command is:
-
-git clone <repository-url>
+*The general command is:*
+git clone <https://github.com/Inovix-Security-Team/inovix>
 
 After cloning, move into the project directory:
-
 cd inovix
 
-The repository URL should be replaced with the official Inovix repository URL.
-
-Example workflow:
-
-git clone <repository-url>
+*Example workflow:*
+git clone https://github.com/Inovix-Security-Team/inovix
 cd inovix
 
 Developers should confirm that the repository has been cloned successfully before creating or modifying project files.
@@ -124,11 +117,11 @@ The general process is expected to be:
 
 Component-specific setup and run commands should be documented as the implementation and technology stack are finalized.
 
-**Status: To Be Finalized (TBD)**
+*Status: To Be Finalized (TBD)*
+
 
 
 ## Development Guidelines
-
 When working on the Inovix project, developers should follow the agreed project workflow and keep changes limited to the relevant task or component.
 
 General development guidelines include:
@@ -143,12 +136,12 @@ General development guidelines include:
 
 Additional development standards and contribution guidelines may be documented as the project evolves.
 
-**Status: To Be Finalized (TBD)**
+*Status: To Be Finalized (TBD)*
+
 
 
 
 ## Document Status
-
 This document provides the initial development setup foundation for the Inovix project.
 
 It currently describes the general requirements for setting up the repository, cloning the project, working with branches, and preparing project components for development.

@@ -1,96 +1,145 @@
-# Inovix API Contract
+**Overview**
+This document describes the current API foundation for Inovix.
+The backend currently provides an initial versioned API structure. The API contract may evolve as the Security Engine and other components are integrated.
+*Only implemented endpoints and confirmed request/response structures are documented as implemented. Future integration details remain TBD.
 
-## Overview
+**API Version**
 
-This document defines the initial API concept for the Inovix platform.
-
-The API contract is currently limited to the endpoints agreed upon by the team. Additional endpoints should not be added to this document until they are discussed and finalized.
-
-The request and response structures may be updated as the backend implementation progresses.
-
----
-
-## API Version
-
-The initial API version is v1.
-
-The API base path is expected to follow this structure:
-
+The current API version is:
+v1
+The API base path is:
 /api/v1
 
-The complete base URL is currently to be finalized.
-
-**Status: To Be Finalized (TBD)**
 
 
-
-## Health Check
-
-### Endpoint
-
+**Health Check**
+*Endpoint*
 GET /api/v1/health
 
-### Purpose
+*Purpose*
+This endpoint verifies that the backend service is running and responding.
 
-This endpoint is intended to check whether the Inovix backend service is available and responding.
+*Request*
+No request body is required.
 
-### Request
-
-No request body is expected.
-
-### Response
-
-The exact response structure is currently to be finalized.
-
-An example conceptual response may be:
-
+*Current Response*
 {
   "status": "ok"
 }
 
-This example is provisional and should be updated when the backend API contract is finalized.
-
-**Status: To Be Finalized (TBD)**
+Status: Implemented
 
 
 
-## Analysis Request
-
-### Endpoint
-
+**Security Analysis**
+*Endpoint*
 POST /api/v1/analyze
 
-### Purpose
+*Purpose*
+This endpoint receives a target for security analysis.
 
-This endpoint is intended to receive supported input for security analysis.
+The current backend implementation uses a mock analysis service. Integration with the Security Engine is planned for future development.
 
-The backend is expected to coordinate the analysis process and return the relevant result once the final implementation is defined.
+*Current Request Body*
+{
+  "target": "example.com"
+}
+The target field must be a non-empty string.
 
-### Request Body
+*Current Response*
+{
+  "status": "completed",
+  "target": "example.com",
+  "risk_level": "low",
+  "score": 10,
+  "message": "Mock analysis completed successfully."
+}
 
-The exact request format and supported input types are currently to be finalized.
+*The current response fields include:*
+status
+target
+risk_level
+score
+message
 
-**Status: To Be Finalized (TBD)**
+*The risk_level may currently support:*
+low
+medium
+high
+critical
+unknown
 
-### Response
-
-The exact response format is currently to be finalized.
-
-The response may eventually include information related to the analysis result, risk assessment, or other relevant findings, depending on the final implementation.
-
-**Status: To Be Finalized (TBD)**
+The score is currently defined between 0 and 100.
+Status: Implemented Foundation
+The current analysis result is generated using mock analysis data.
 
 
 
-## API Contract Status
+**Validation Errors**
+Invalid requests are handled using the backend's validation error handling structure.
+The exact error details may depend on the invalid request.
 
-This document represents the initial API concept for Inovix.
+*Example conceptual structure:*
+{
+  "error": "validation_error",
+  "message": "The request data is invalid.",
+  "details": []
+}
+Status: Implemented
+The exact response structure may be refined as the backend evolves.
 
-Currently documented endpoints:
 
-- GET /api/v1/health
-- POST /api/v1/analyze
 
-The API contract should be updated when the backend implementation and request/response formats are finalized by the development team, including Basit.
+**Future Security Engine Integration**
+The current analysis flow is:
 
-No additional endpoints or unsupported API capabilities should be assumed until they are agreed upon.
+POST /api/v1/analyze
+        ↓
+Analysis Service
+        ↓
+Mock Analysis
+        ↓
+API Response
+
+The planned direction is:
+
+POST /api/v1/analyze
+        ↓
+Analysis Service
+        ↓
+Security Engine
+        ↓
+Detection + Analysis
+        ↓
+Security Result
+        ↓
+API Response
+
+*The final integration contract between the backend and Security Engine is currently TBD.*
+
+
+
+**API Contract Status**
+*Implemented*
+API versioning through /api/v1.
+GET /api/v1/health.
+POST /api/v1/analyze.
+Basic request validation.
+Response schema for the current analysis endpoint.
+Validation error handling.
+
+
+*Planned*
+Integration with the Security Engine.
+Real analysis results.
+Expanded API capabilities where required.
+
+
+*TBD*
+Final backend-to-Security Engine integration contract.
+Final request and response schema after full integration.
+Additional API endpoints.
+Authentication and authorization requirements.
+API deployment configuration.
+
+**This document should be updated whenever the implemented API contract changes**

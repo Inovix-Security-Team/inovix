@@ -1,154 +1,268 @@
-# Inovix System Overview
+**Overview**
 
-## Overview
+Inovix is a cybersecurity platform being developed to support proactive security monitoring, threat detection, analysis, and informed response.
 
-Inovix is a cybersecurity platform being developed to help analyze security-related information and support the identification and assessment of potential threats.
+The project is evolving toward an active security workflow in which security-related events can be monitored, processed by the Security Engine, analyzed for potential threats, and used to support appropriate prevention or response decisions.
 
-The project is organized around multiple components that are expected to work together to receive input, process security-related data, perform analysis, and present meaningful results.
+This document describes the current high-level architecture based on the project's implemented foundation and planned direction.
 
-This document describes the current high-level system concept. Technical implementation details will be updated as the project architecture is finalized.
+**Problem Statement**
 
----
- 
-## Problem Statement
+Modern security environments can generate large amounts of security-related information that may be difficult to monitor and analyze efficiently.
 
-Modern security environments can generate large amounts of information that may be difficult to analyze and interpret efficiently.
+Inovix aims to provide a structured security workflow that can help:
 
-Inovix aims to provide a structured platform for processing security-related inputs and supporting threat analysis and risk assessment.
+Monitor security-related activity.
+Process and normalize security events.
+Detect potential security indicators.
+Analyze detected findings.
+Assess potential risk and impact.
+Support prevention or response decisions.
+Present results and reporting in an understandable form.
 
-The exact scope, supported data sources, detection capabilities, and integrations are still under development.
+The exact scope, supported data sources, monitoring capabilities, and advanced detection techniques will continue to evolve as development progresses.
 
----
-
-## High-Level System Flow
-
-The initial conceptual flow of Inovix is:
-
-```text
-Frontend
-    ↓
-Backend
-    ↓
+**High-Level System Flow**
+Local Inovix CLI / Agent
+        ↓
+Live Monitoring
+        ↓
 Security Engine
+        ↓
+Detection + Analysis
+        ↓
+Prevention / Response
+        ↓
+Result / Reporting
+
+
+**Local Inovix CLI / Agent**
+
+The Local Inovix CLI / Agent represents the planned local interaction and monitoring layer.
+
+Potential responsibilities include:
+
+Collecting or receiving supported security-related events.
+Initiating local analysis.
+Passing events to the Security Engine.
+Supporting monitoring workflows.
+Presenting or forwarding relevant results.
+
+Status: Planned
+
+The exact implementation and supported platforms are currently TBD.
+
+**Live Monitoring**
+
+Live Monitoring represents the planned capability for observing supported security-related activity and generating events for further processing.
+
+Potential responsibilities include:
+
+Monitoring supported inputs or events.
+Preparing events for security analysis.
+Providing relevant event context.
+Forwarding supported events to the Security Engine.
+
+The exact monitoring sources and implementation approach are currently TBD.
+
+Status: Planned
+
+
+**Security Engine**
+
+The Security Engine is the core security-focused processing component of Inovix.
+
+The current implemented foundation provides a modular pipeline that includes:
+Validation
+    ↓
+Normalization
     ↓
 Analysis
     ↓
-Result
+Detection
+    ↓
+Risk Scoring
+    ↓
+Verdict
+    ↓
+Impact Assessment
+    ↓
+Response Decision
+    ↓
+Verification
 
+The current foundation uses basic rule-based analysis and detection with safe test inputs.
 
-## High-Level System Flow
-At a high level, information is expected to move through the system as follows:
+Current implementation includes:
 
-1. A user or supported client interacts with Inovix through an appropriate interface.
-2. The backend receives and coordinates the request.
-3. Relevant information is passed to the security-focused processing layer.
-4. The system performs analysis using approaches that will be finalized by the team.
-5. The analysis is used to produce a result or risk assessment.
-6. The result is presented in an understandable form.
+Input validation.
+Input normalization.
+Analyzer interface and basic analyzer.
+Detector interface and rule-based detection.
+Explainable security findings.
+Risk scoring.
+Verdict generation.
+Basic impact assessment.
+Safe response decision structure.
+Verification placeholder.
+Unit tests.
 
-This flow represents the current conceptual architecture and may be refined as implementation decisions are made.
+ML and threat-intelligence components currently exist as placeholders for future development.
 
-
-## Frontend
-The frontend is intended to provide a user-facing interface for interacting with the Inovix platform.
-
-Expected responsibilities may include:
-
-- Providing user interaction
-- Accepting supported inputs
-- Sending requests to the backend
-- Displaying analysis results
-- Presenting relevant security information
-
-The frontend technology, interface design, and final functionality are currently under development.
-
-**Status: To Be Finalized (TBD)**
-
-
-## Backend
-The backend is expected to act as a coordination layer between user-facing components and other parts of the system.
-
-Expected responsibilities may include:
-
-- Receiving requests
-- Validating incoming data
-- Managing application workflows
-- Coordinating communication with other components
-- Returning analysis results
-
-The backend framework, API implementation, data handling, and supporting infrastructure will be documented as technical decisions are finalized.
-
-**Status: To Be Finalized (TBD)**
-
-
-## Security Engine
-The security engine represents the security-focused processing part of the Inovix platform.
-
-Its exact implementation is currently under development.
-
-Potential responsibilities may include:
-
-- Processing security-related inputs
-- Supporting threat detection
-- Producing security findings
-- Providing information for further analysis and risk assessment
-
-The specific detection rules, models, techniques, and integrations have not yet been finalized.
-
-**Status: To Be Finalized (TBD)**
-
-
-## Analysis
-The analysis stage is intended to interpret the information produced during security processing.
-
-Possible approaches may include:
-
-- Rule-based analysis
-- Behavioral analysis
-- Anomaly detection
-- Other detection or analysis approaches approved by the team
-
-The final analysis methodology and decision logic are yet to be finalized.
-
-**Status: To Be Finalized (TBD)**
-
-
-## Result
-The final stage is intended to communicate the outcome of the analysis.
-
-Depending on the final implementation, the result may include:
-
-- Relevant security findings
-- A risk assessment
-- Supporting explanations
-- Other information relevant to the analysis
-
-The exact result format, risk levels, scoring methodology, and presentation are currently to be finalized.
-
-**Status: To Be Finalized (TBD)**
-
-
-## Architecture Decisions Pending
-
-The following areas are not yet finalized and should be updated when the development team confirms the relevant decisions:
-
-- Frontend technology and architecture
-- Backend technology and framework
-- Communication between components
-- API request and response formats
-- Security engine design
-- Threat detection approaches
-- Analysis methodology
-- Risk assessment methodology
-- Data storage requirements
-- Authentication and authorization
-- External service integrations
-- Deployment architecture
+Status: Implemented Foundation / Under Development
 
 
 
-## Document Status
+**Detection and Analysis**
 
-This document provides the initial architecture foundation for Inovix.
+The Detection and Analysis stage processes security-related events to identify relevant indicators and assess potential risk.
 
-It should be updated as development progresses and technical decisions are finalized. The purpose of this document is to describe the agreed high-level system concept without claiming implementation details that have not yet been confirmed.
+The currently implemented Security Engine foundation can identify selected rule-based indicators, including:
+
+Suspicious social-engineering language.
+URL presence.
+Credential-related requests.
+Financial requests.
+Possible impersonation language.
+
+Detected findings are used to generate:
+
+Security indicators.
+Explainable reasons.
+A risk score.
+A security verdict.
+
+Advanced analysis methods such as behavioral analysis, anomaly detection, machine learning, and external threat intelligence are currently TBD.
+
+Status: Partially Implemented
+
+**Prevention / Response**
+
+The Prevention / Response stage represents the planned capability to support appropriate action based on the security analysis result.
+
+The current Security Engine foundation includes safe response decisions such as:
+
+NO_ACTION
+MONITOR
+REVIEW
+
+These decisions are currently recommendations or simulated outcomes.
+
+The current foundation does not execute real containment, remediation, malware handling, or other automated actions.
+
+The exact prevention and response mechanisms are currently TBD.
+
+Status: Implemented Foundation / Planned Expansion
+
+**Result / Reporting**
+
+The Result / Reporting layer communicates the outcome of security analysis.
+
+The current Security Engine foundation can provide:
+
+Verdict.
+Risk score.
+Security findings.
+Reasons.
+Indicators.
+Risk assessment.
+Impact assessment.
+Response decision.
+Verification status.
+
+The final reporting format, user interface, storage requirements, history, and advanced reporting capabilities are currently TBD.
+
+Status: Partially Implemented
+
+**Backend**
+
+The backend provides an API layer for supported Inovix components.
+
+The currently implemented backend foundation uses FastAPI and provides:
+
+API versioning through /api/v1.
+Health-check endpoint.
+Analysis endpoint.
+Request and response schemas.
+Service-layer structure.
+Configuration structure.
+Validation error handling.
+Automated API tests.
+
+Current endpoints include:
+GET  /api/v1/health
+POST /api/v1/analyze
+
+The current analysis endpoint uses mock analysis data.
+Integration between the backend and the actual Security Engine is planned for future work.
+Status: Implemented Foundation / Under Development
+
+
+
+**Frontend**
+
+The frontend is intended to provide a user-facing interface for interacting with supported Inovix functionality.
+
+Potential responsibilities include:
+
+Providing user interaction.
+Accepting supported security-related input.
+Displaying analysis results.
+Presenting security findings and risk information.
+Supporting reporting and other future workflows.
+
+The detailed frontend implementation and integration status are currently TBD.
+
+Status: Under Development
+
+
+
+**Architecture Decisions Still Pending**
+
+The following areas are not yet finalized:
+
+Local CLI / Agent implementation.
+Live monitoring sources and supported platforms.
+Backend integration with the Security Engine.
+Final API contract.
+Frontend implementation and integration.
+Advanced detection techniques.
+Machine learning models.
+Threat-intelligence integrations.
+Prevention and response mechanisms.
+Data storage requirements.
+Authentication and authorization requirements.
+Deployment architecture.
+
+
+
+**Document Status**
+**Implemented**
+Backend API foundation.
+Security Engine foundation.
+Basic validation and normalization.
+Rule-based analysis and detection.
+Risk scoring and verdict generation.
+Basic impact assessment.
+Safe response decision structure.
+Health and analysis API foundations.
+
+
+
+**Planned**
+Local Inovix CLI / Agent.
+Live Monitoring.
+Backend and Security Engine integration.
+Prevention and response expansion.
+Frontend implementation.
+Result and reporting expansion.
+
+
+
+**TBD**
+Final API contract.
+Advanced monitoring capabilities.
+Machine learning implementation.
+Threat-intelligence integrations.
+Automated prevention mechanisms.
+Final deployment architecture.
