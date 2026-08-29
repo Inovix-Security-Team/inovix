@@ -1,0 +1,32 @@
+{
+  "normal_event": {
+    "event_id": "EVT-1001",
+    "timestamp": "2026-08-29T10:00:00Z",
+    "event_type": "user_login",
+    "source_ip": "192.168.1.50",
+    "user": "alice",
+    "status": "success"
+  },
+  "brute_force_event": {
+    "event_id": "EVT-2001",
+    "timestamp": "2026-08-29T10:05:00Z",
+    "event_type": "failed_login",
+    "source_ip": "10.0.0.99",
+    "user": "root",
+    "attempts": 15,
+    "target_service": "SSH"
+  },
+  "port_scan_event": {
+    "event_id": "EVT-3001",
+    "timestamp": "2026-08-29T10:10:00Z",
+    "event_type": "network_scan",
+    "source_ip": "10.0.0.105",
+    "ports_scanned": [21, 22, 80, 443, 3306, 8080],
+    "target_ip": "192.168.1.1"
+  },
+  "invalid_event": {
+    "event_id": "",
+    "timestamp": "invalid-time",
+    "event_type": null
+  }
+}
