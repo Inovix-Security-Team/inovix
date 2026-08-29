@@ -94,6 +94,3 @@ It describes the current security objectives, threat-analysis concept, safe test
 The document should be updated as the project architecture, security requirements, supported data sources, detection approaches, and integrations are finalized.
 
 No security capability or protection mechanism should be considered implemented or supported unless it has been confirmed and documented by the development team.
-
-
-
