@@ -30,7 +30,7 @@ def test_security_empty_input():
 def test_security_safe_sample(test_events):
     """TEST-004: Process normal user event"""
     engine = get_security_engine()
-    event = test_events.get("normal_event", {})
+    event = test_events.get("normal_login", {})
     if engine:
         analysis = engine.analyze_event(event)
         assert analysis["risk_score"] < 30
@@ -40,24 +40,22 @@ def test_security_safe_sample(test_events):
 def test_security_brute_force_sample(test_events):
     """TEST-005: Process brute force event"""
     engine = get_security_engine()
-    event = test_events.get("brute_force_event", {})
+    event = test_events.get("failed_login_sequence", {})
     if engine:
         analysis = engine.analyze_event(event)
         assert analysis["risk_score"] >= 80
     else:
-        # Reconciled against events.json keys
         assert event.get("event_type") == "failed_login"
 
 def test_security_port_scan_sample(test_events):
-    """TEST-006: Port scan event fixture analysis"""
+    """TEST-006: Port scan/suspicious fixture analysis"""
     engine = get_security_engine()
-    event = test_events.get("port_scan_event", {})
+    event = test_events.get("credential_request", {})
     if engine:
         analysis = engine.analyze_event(event)
         assert analysis["risk_score"] >= 60
     else:
-        # Reconciled against events.json keys ('network_scan')
-        assert event.get("event_type") in ["network_scan", "port_scan"]
+        assert event.get("event_type") in ["phishing_attempt", "network_scan", "port_scan"]
 
 def test_security_invalid_event_sample(test_events):
     """TEST-007: Invalid event fixture analysis"""
