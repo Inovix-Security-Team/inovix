@@ -1,32 +1,57 @@
 {
-  "normal_event": {
+  "normal_login": {
     "event_id": "EVT-1001",
-    "timestamp": "2026-08-29T10:00:00Z",
+    "timestamp": "2026-08-30T10:00:00Z",
     "event_type": "user_login",
     "source_ip": "192.168.1.50",
-    "user": "alice",
-    "status": "success"
+    "user": "john.doe",
+    "status": "SUCCESS"
   },
   "brute_force_event": {
     "event_id": "EVT-2001",
-    "timestamp": "2026-08-29T10:05:00Z",
+    "timestamp": "2026-08-30T10:05:00Z",
     "event_type": "failed_login",
     "source_ip": "10.0.0.99",
-    "user": "root",
-    "attempts": 15,
-    "target_service": "SSH"
+    "attempts": 15
   },
   "port_scan_event": {
-    "event_id": "EVT-3001",
-    "timestamp": "2026-08-29T10:10:00Z",
+    "event_id": "EVT-2002",
+    "timestamp": "2026-08-30T10:06:00Z",
     "event_type": "network_scan",
-    "source_ip": "10.0.0.105",
-    "ports_scanned": [21, 22, 80, 443, 3306, 8080],
-    "target_ip": "192.168.1.1"
+    "source_ip": "10.0.0.100",
+    "ports_scanned": 150
+  },
+  "credential_request": {
+    "event_id": "EVT-3001",
+    "timestamp": "2026-08-30T10:10:00Z",
+    "event_type": "phishing_attempt",
+    "message": "Please send your password to update your account",
+    "source_ip": "10.0.0.105"
+  },
+  "false_positive_password_policy": {
+    "event_id": "EVT-1002",
+    "timestamp": "2026-08-30T10:01:00Z",
+    "event_type": "policy_notice",
+    "message": "Please update your password according to the company security policy.",
+    "source_ip": "192.168.1.10"
+  },
+  "false_positive_admin_banking": {
+    "event_id": "EVT-1003",
+    "timestamp": "2026-08-30T10:02:00Z",
+    "event_type": "admin_doc",
+    "message": "The security administrator documented the banking security requirements.",
+    "source_ip": "192.168.1.11"
+  },
+  "multiple_findings": {
+    "event_id": "EVT-7001",
+    "timestamp": "2026-08-30T10:30:00Z",
+    "event_type": "phishing_attempt",
+    "message": "Urgent CEO Wire transfer: Send password and credit card info to http://suspicious-verify.com",
+    "source_ip": "10.0.0.109"
   },
   "invalid_event": {
     "event_id": "",
-    "timestamp": "invalid-time",
+    "timestamp": "invalid-timestamp",
     "event_type": null
   }
 }

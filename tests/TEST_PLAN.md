@@ -1,16 +1,9 @@
-# Inovix QA Foundation & Master Test Plan
+# TASK-004 Test Plan — Security Engine & Backend Integration Assurance
 
-## Overview
-This document defines the foundational testing structure, test matrix, and guidelines for validating the Inovix Security Framework across all pipeline stages[cite: 1, 2].
+## Architecture & Scope
+* **Backend API Suite (`tests/api/`)**: Validates endpoint health, input contract rejection, and response JSON formats.
+* **Security Engine Suite (`tests/security/`)**: Validates validation, normalization, multi-indicator detection rules, boundary risk scoring, and false-positive handling.
+* **Integration Suite (`tests/integration/`)**: Validates end-to-end data flow from HTTP request down to structured risk verdict.
 
-## Test Matrix
-
-| Test ID | Component | Test Scenario | Expected Outcome | Actual Executed Status |
-| :--- | :--- | :--- | :--- | :--- |
-| TEST-001 | Backend | Health API Endpoint | HTTP 200 OK | PASS (Executable) |
-| TEST-002 | Backend | Invalid Request Handling | HTTP 422 Unprocessable Entity | PASS (Executable) |
-| TEST-003 | Security | Empty Input Event | Validation Error / Reject | PASS (Executable) |
-| TEST-004 | Security | Safe / Normal Sample | SAFE / Low Risk (<30) | PASS (Executable) |
-| TEST-005 | Security | Brute Force Payload | SUSPICIOUS / High Risk (>=80) | PASS (Executable) |
-| TEST-006 | Security | Port Scan Payload | SUSPICIOUS / Risk (>=60) | PASS (Executable) |
-| TEST-007 | Security | Malformed Event Sample | REJECTED / Error | PASS (Executable) |
+## Known Boundaries & Limitations
+* **Live IPC Channel**: Tested where implemented in backend service layer. Direct engine integration boundary is documented via integration contracts.
