@@ -11,6 +11,7 @@ from models import (
     SecurityResult,
     VerificationResult,
 )
+from threat_intelligence import LocalThreatIntelligenceProvider
 from utils.normalization import normalize_input
 from utils.risk_scoring import calculate_risk_score
 from utils.validation import validate_input
@@ -23,6 +24,7 @@ class SecurityEngine:
     def __init__(self) -> None:
         self.analyzer = BasicAnalyzer()
         self.detector = RuleBasedDetector()
+        self.threat_intelligence = LocalThreatIntelligenceProvider()
 
     def analyze(
         self,
@@ -38,6 +40,7 @@ class SecurityEngine:
             -> normalization
             -> analysis
             -> detection
+            -> threat intelligence
             -> risk scoring
             -> verdict
             -> impact
@@ -48,7 +51,6 @@ class SecurityEngine:
         validate_input(content)
 
         try:
-            # 1. Normalize input
             normalized = normalize_input(
                 content,
                 source=source,
@@ -56,13 +58,15 @@ class SecurityEngine:
                 metadata=metadata,
             )
 
-            # 2. Analyze normalized event
             analysis = self.analyzer.analyze(normalized)
 
-            # 3. Generate detection findings
             findings = self.detector.detect(analysis)
 
-            # 4. Calculate risk
+            findings = [
+                self.threat_intelligence.enrich(finding)
+                for finding in findings
+            ]
+
             risk_score = calculate_risk_score(findings)
 
             risk = RiskResult(
@@ -71,14 +75,11 @@ class SecurityEngine:
                 reasons=[finding.reason for finding in findings],
             )
 
-            # 5. Generate verdict
             verdict = risk.level
 
-            # 6. Generate explanations
             reasons = [finding.reason for finding in findings]
             indicators = [finding.indicator for finding in findings]
 
-            # 7. Basic impact assessment
             if risk_score >= 80:
                 impact = ImpactResult(
                     level="HIGH",
@@ -101,8 +102,6 @@ class SecurityEngine:
                     ],
                 )
 
-            # 8. Safe response decision.
-            # No real containment/remediation is executed.
             if verdict == "MALICIOUS":
                 response = ResponseDecision(
                     action="REVIEW",
@@ -123,7 +122,6 @@ class SecurityEngine:
                     reason="No response action is required.",
                 )
 
-            # 9. Verification is currently a safe stub.
             verification = VerificationResult(
                 verified=True,
                 status="NOT_EXECUTED",
