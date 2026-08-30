@@ -1,0 +1,38 @@
+.alert {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+.alert-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  font-weight: 700;
+}
+
+.alert-info {
+  background: #eff6ff;
+  color: #1e40af;
+}
+
+.alert-success {
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.alert-warning {
+  background: #fff7ed;
+  color: #9a3412;
+}
+
+.alert-error {
+  background: #fef2f2;
+  color: #991b1b;
+}

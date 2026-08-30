@@ -1,0 +1,32 @@
+.result-card {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.result-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.result-description {
+  margin: 0 0 16px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .result-header {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
