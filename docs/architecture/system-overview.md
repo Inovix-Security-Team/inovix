@@ -104,10 +104,9 @@ Risk scoring.
 Verdict generation.
 Basic impact assessment.
 Safe response decision structure.
-Verification placeholder.
+Verification status structure.
 Unit tests.
-
-ML and threat-intelligence components currently exist as placeholders for future development.
+Machine learning and threat-intelligence integration are not currently confirmed as implemented and remain planned for future development.
 
 Status: Implemented Foundation / Under Development
 
@@ -132,7 +131,7 @@ Explainable reasons.
 A risk score.
 A security verdict.
 
-Advanced analysis methods such as behavioral analysis, anomaly detection, machine learning, and external threat intelligence are currently TBD.
+Advanced analysis capabilities, including behavioral analysis, anomaly scoring, machine learning, and external threat-intelligence integration, remain Planned or TBD unless confirmed by the current implementation.
 
 Status: Partially Implemented
 
@@ -150,7 +149,7 @@ These decisions are currently recommendations or simulated outcomes.
 
 The current foundation does not execute real containment, remediation, malware handling, or other automated actions.
 
-The exact prevention and response mechanisms are currently TBD.
+The exact prevention and response mechanisms remain TBD and must not be described as implemented until they are confirmed by the current implementation.
 
 Status: Implemented Foundation / Planned Expansion
 
@@ -170,7 +169,7 @@ Impact assessment.
 Response decision.
 Verification status.
 
-The final reporting format, user interface, storage requirements, history, and advanced reporting capabilities are currently TBD.
+The final reporting format, user interface, storage requirements, event history, and advanced reporting capabilities remain TBD and will be updated after implementation is confirmed.
 
 Status: Partially Implemented
 
@@ -194,7 +193,7 @@ GET  /api/v1/health
 POST /api/v1/analyze
 
 The current analysis endpoint uses mock analysis data.
-Integration between the backend and the actual Security Engine is planned for future work.
+Integration between the backend and the actual Security Engine remains planned until the integration contract and behavior are implemented and verified.
 Status: Implemented Foundation / Under Development
 
 
@@ -211,33 +210,32 @@ Displaying analysis results.
 Presenting security findings and risk information.
 Supporting reporting and other future workflows.
 
-The detailed frontend implementation and integration status are currently TBD.
+The detailed frontend implementation and integration status should be updated according to the current codebase and developer confirmation.
 
 Status: Under Development
 
 
 
 **Architecture Decisions Still Pending**
-
 The following areas are not yet finalized:
-
 Local CLI / Agent implementation.
 Live monitoring sources and supported platforms.
 Backend integration with the Security Engine.
 Final API contract.
 Frontend implementation and integration.
-Advanced detection techniques.
-Machine learning models.
-Threat-intelligence integrations.
-Prevention and response mechanisms.
-Data storage requirements.
+Advanced detection techniques, including behavioral analysis, anomaly scoring, machine learning, and threat-intelligence integration.
+Machine learning models and anomaly-scoring implementation.
+Threat-intelligence integrations and external security-data sources.
+Final prevention and response mechanisms, including any automated actions or response simulation.
+Final data storage and event-retention requirements.
 Authentication and authorization requirements.
 Deployment architecture.
-
+These items should remain marked as Planned or TBD until implementation and technical decisions are confirmed.
 
 
 **Document Status**
 **Implemented**
+The following components are confirmed as part of the current implemented foundation:
 Backend API foundation.
 Security Engine foundation.
 Basic validation and normalization.
@@ -245,24 +243,32 @@ Rule-based analysis and detection.
 Risk scoring and verdict generation.
 Basic impact assessment.
 Safe response decision structure.
-Health and analysis API foundations.
-
+Health-check API functionality.
+Analysis API foundation using mock analysis data.
 
 
 **Planned**
+The following components are part of the confirmed project direction but are not yet confirmed as fully implemented:
 Local Inovix CLI / Agent.
 Live Monitoring.
 Backend and Security Engine integration.
 Prevention and response expansion.
-Frontend implementation.
-Result and reporting expansion.
+Frontend implementation and integration.
+Result and reporting expansion
 
 
 
 **TBD**
+The following details are intentionally unresolved and require future technical decisions or implementation confirmation:
 Final API contract.
 Advanced monitoring capabilities.
 Machine learning implementation.
 Threat-intelligence integrations.
 Automated prevention mechanisms.
+Final incident and correlation workflow.
+Final data storage and event-retention requirements.
+Authentication and authorization requirements.
 Final deployment architecture.
+These items must remain unresolved until the relevant implementation or technical decision is confirmed
+
+*This document must be updated as the Inovix implementation evolves. Implemented functionality should be verified against the codebase or confirmed by the responsible developer before being documented as complete.*
