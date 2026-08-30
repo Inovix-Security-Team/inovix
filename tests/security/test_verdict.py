@@ -1,18 +1,26 @@
 import pytest
 
-def get_verdict_engine():
-    try:
-        from security_engine.verdict import generate_verdict
-        return generate_verdict
-    except (ImportError, ModuleNotFoundError):
-        return None
+from utils.verdict import generate_verdict
 
-def test_verdict_deterministic_mapping():
-    engine = get_verdict_engine()
-    if engine:
-        v_low = engine(risk_score=15)
-        v_crit = engine(risk_score=90)
-        assert v_low["verdict"] == "ALLOW" or v_low["verdict"] == "SAFE"
-        assert v_crit["verdict"] == "BLOCK" or v_crit["verdict"] == "ALERT"
-    else:
-        assert True
+
+@pytest.mark.parametrize(
+    "risk_score, expected_verdict",
+    [
+        (0, "SAFE"),
+        (1, "SUSPICIOUS"),
+        (29, "SUSPICIOUS"),
+        (30, "SUSPICIOUS"),
+        (59, "SUSPICIOUS"),
+        (60, "SUSPICIOUS"),
+        (79, "SUSPICIOUS"),
+        (80, "MALICIOUS"),
+        (100, "MALICIOUS"),
+    ],
+)
+def test_verdict_deterministic_mapping(risk_score, expected_verdict):
+    assert generate_verdict(risk_score) == expected_verdict
+
+
+@pytest.mark.parametrize("risk_score", [-1, 101, 150])
+def test_verdict_out_of_range(risk_score):
+    assert generate_verdict(risk_score) == "UNKNOWN"

@@ -1,44 +1,83 @@
-import pytest
-import json
-from pathlib import Path
+from analyzers.basic import BasicAnalyzer
+from detectors.rules import RuleBasedDetector
 
-@pytest.fixture
-def test_events():
-    data_path = Path(__file__).parent.parent / "test-data" / "events.json"
-    with open(data_path, "r") as f:
-        return json.load(f)
 
-def get_detector():
-    try:
-        from security_engine.detection import detect_threats
-        return detect_threats
-    except (ImportError, ModuleNotFoundError):
-        return None
+def analyze_text(text: str) -> list:
+    analyzer = BasicAnalyzer()
+    detector = RuleBasedDetector()
 
-def test_detection_safe_event(test_events):
-    detector = get_detector()
-    event = test_events["normal_login"]
-    if detector:
-        findings = detector(event)
-        assert len(findings) == 0
-    else:
-        assert event["event_type"] == "user_login"
+    analysis = analyzer.analyze(
+        type(
+            "AnalysisInput",
+            (),
+            {"content": text},
+        )()
+    )
 
-def test_detection_suspicious_event(test_events):
-    detector = get_detector()
-    event = test_events["credential_request"]
-    if detector:
-        findings = detector(event)
-        assert len(findings) >= 1
-    else:
-        assert "password" in event["message"]
+    return detector.detect(analysis)
 
-def test_detection_multiple_findings(test_events):
-    """Verify that multiple triggered rules are preserved without overwriting"""
-    detector = get_detector()
-    event = test_events["multiple_findings"]
-    if detector:
-        findings = detector(event)
-        assert len(findings) >= 2
-    else:
-        assert "Urgent" in event["message"] and "http" in event["message"]
+
+def test_detection_safe_event():
+    findings = analyze_text("User completed a normal login successfully.")
+
+    assert findings == []
+
+
+def test_detection_url():
+    findings = analyze_text(
+        "Please visit https://example.com to continue."
+    )
+
+    assert any(
+        finding.rule_id == "URL_PRESENT"
+        for finding in findings
+    )
+
+
+def test_detection_credential_request():
+    findings = analyze_text(
+        "Please send your password and OTP."
+    )
+
+    assert any(
+        finding.rule_id == "CREDENTIAL_REQUEST"
+        for finding in findings
+    )
+
+
+def test_detection_financial_request():
+    findings = analyze_text(
+        "Please complete the bank transfer immediately."
+    )
+
+    assert any(
+        finding.rule_id == "FINANCIAL_REQUEST"
+        for finding in findings
+    )
+
+
+def test_detection_impersonation():
+    findings = analyze_text(
+        "I am from your bank. Please verify your account."
+    )
+
+    assert any(
+        finding.rule_id == "IMPERSONATION_LANGUAGE"
+        for finding in findings
+    )
+
+
+def test_detection_multiple_findings():
+    findings = analyze_text(
+        "Urgent action required. Send your password "
+        "and bank transfer details to https://example.com."
+    )
+
+    rule_ids = {finding.rule_id for finding in findings}
+
+    assert "SUSPICIOUS_LANGUAGE" in rule_ids
+    assert "URL_PRESENT" in rule_ids
+    assert "CREDENTIAL_REQUEST" in rule_ids
+    assert "FINANCIAL_REQUEST" in rule_ids
+
+    assert len(findings) >= 4

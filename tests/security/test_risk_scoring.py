@@ -1,36 +1,65 @@
 import pytest
 
-def get_risk_calculator():
-    try:
-        from security_engine.scoring import calculate_risk_score
-        return calculate_risk_score
-    except (ImportError, ModuleNotFoundError):
-        return None
+from models import Finding
+from utils.risk_scoring import calculate_risk_score
 
-@pytest.mark.parametrize("score, expected_band", [
-    (0, "Low"),
-    (29, "Low"),
-    (30, "Medium"),
-    (59, "Medium"),
-    (60, "High"),
-    (79, "High"),
-    (80, "Critical"),
-    (100, "Critical"),
-])
-def test_risk_score_boundaries(score, expected_band):
-    """Validate strict boundary conditions across 0-29 Low, 30-59 Medium, 60-79 High, 80-100 Critical"""
-    calc = get_risk_calculator()
-    if calc:
-        band = calc(score)
-        assert band == expected_band
-    else:
-        # Verification of band logic definition
-        if score <= 29:
-            band = "Low"
-        elif score <= 59:
-            band = "Medium"
-        elif score <= 79:
-            band = "High"
-        else:
-            band = "Critical"
-        assert band == expected_band
+
+def make_finding(severity: str) -> Finding:
+    return Finding(
+        rule_id=f"TEST_{severity}",
+        severity=severity,
+        reason=f"{severity} test finding.",
+        indicator=f"{severity.lower()}_indicator",
+    )
+
+
+@pytest.mark.parametrize(
+    "severity, expected_score",
+    [
+        ("LOW", 20),
+        ("MEDIUM", 50),
+        ("HIGH", 80),
+        ("CRITICAL", 100),
+    ],
+)
+def test_single_finding_score(severity, expected_score):
+    finding = make_finding(severity)
+
+    assert calculate_risk_score([finding]) == expected_score
+
+
+def test_empty_findings_score_zero():
+    assert calculate_risk_score([]) == 0
+
+
+def test_multiple_findings_are_combined():
+    findings = [
+        make_finding("LOW"),
+        make_finding("MEDIUM"),
+    ]
+
+    assert calculate_risk_score(findings) == 70
+
+
+def test_multiple_high_findings_are_capped_at_100():
+    findings = [
+        make_finding("HIGH"),
+        make_finding("HIGH"),
+    ]
+
+    assert calculate_risk_score(findings) == 100
+
+
+def test_critical_finding_caps_score_at_100():
+    findings = [
+        make_finding("CRITICAL"),
+        make_finding("HIGH"),
+    ]
+
+    assert calculate_risk_score(findings) == 100
+
+
+def test_unknown_severity_contributes_zero():
+    finding = make_finding("UNKNOWN")
+
+    assert calculate_risk_score([finding]) == 0
