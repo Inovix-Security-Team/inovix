@@ -56,8 +56,7 @@ cd inovix
 
 Developers should confirm that the repository has been cloned successfully before creating or modifying project files.
 
-**Status: Repository URL To Be Added**
-
+**Status: Implemented**
 
 ## Branch Workflow
 
@@ -144,4 +143,3 @@ It currently describes the general requirements for setting up the repository, c
 Component-specific technologies, dependencies, configuration steps, environment variables, and run commands should be added as they are finalized by the development team.
 
 This document should be kept up to date whenever the development workflow or project setup requirements change.
-
