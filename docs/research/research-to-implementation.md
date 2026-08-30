@@ -2,230 +2,366 @@
 
 ## Overview
 
-This document connects Inovix security research with the current and planned project implementation.
+This document connects Inovix security research and planned security capabilities with the current implementation.
 
-The purpose is to prevent research findings, documentation, and project claims from becoming disconnected from the actual codebase.
+Its purpose is to prevent research findings, planned functionality, and implemented functionality from being treated as the same thing.
 
-A feature is only marked as implemented when its behavior has been confirmed through the relevant implementation.
+Status definitions:
+
+- **Implemented** — confirmed by the current codebase.
+- **Pending** — intended or researched but not currently implemented.
+- **TBD** — implementation details are not yet finalized.
+- **Research** — documented security knowledge that may support future implementation.
 
 ---
 
-## Research to Implementation Mapping
+## Current Mapping
 
 | Research Finding | Inovix Implementation | Status |
 |---|---|---|
-| Suspicious URL indicators | URL analysis and security evaluation workflow | Planned / Verify |
-| Phishing-style link detection | Browser Guard and URL analysis | Planned |
-| Repeated failed login indicators | Brute-force detection rule | Verify Implementation |
-| Port-scanning indicators | Possible port-scan detection rule | Verify Implementation |
-| Event normalization | Security event processing | Verify Implementation |
-| Rule-based detection | Security Engine detection logic | Verify Implementation |
-| Risk classification | Risk scoring and verdict generation | Verify Implementation |
-| Severity classification | Prototype risk bands | Research / Verify |
-| Anomalous behavior indicators | AI or ML anomaly scoring | Planned |
-| IOC or reputation enrichment | Threat intelligence integration | Pending |
-| Event correlation | Correlation workflow | Pending |
-| Incident prioritization | Risk and incident workflow | Pending |
-| Response actions | Controlled response simulation | Planned |
-| SOC visualization | Dashboard or SOC interface | Verify Implementation |
+| Suspicious URL indicators | Rule-based analysis and URL detection | Implemented |
+| Suspicious social-engineering language | Rule-based detection | Implemented |
+| Credential request indicators | Rule-based detection | Implemented |
+| Financial request indicators | Rule-based detection | Implemented |
+| Possible impersonation language | Rule-based detection | Implemented |
+| Risk scoring | Severity-weighted risk calculation | Implemented |
+| Security verdict generation | SAFE / SUSPICIOUS / MALICIOUS verdict logic | Implemented |
+| Basic impact assessment | LOW / MEDIUM / HIGH impact logic | Implemented |
+| Response decision | REVIEW / MONITOR / NO_ACTION decision structure | Implemented |
+| Verification | Safe verification result structure | Implemented |
+| Brute-force indicators | Dedicated detection rule | Pending |
+| Port-scan indicators | Dedicated detection rule | Pending |
+| AI anomaly behavior | Machine-learning implementation | Pending |
+| Threat intelligence / IOC enrichment | Threat-intelligence integration | Pending |
+| Event correlation | Correlation engine | Pending |
+| Incident creation | Incident workflow | Pending |
+| SOC or dashboard display | Frontend/dashboard implementation | Pending |
+| Browser Guard | Browser extension integration | Pending |
 
 ---
 
-## Primary Scenario Mapping
+## Implemented Detection Research
 
-### Suspicious URL / Phishing Scenario
+### Suspicious URL
 
-**Research Finding**
+The current security engine identifies URL presence through rule-based analysis.
 
-Suspicious URLs may contain observable characteristics that can support security analysis, such as unusual URL structures, suspicious domains, reputation indicators, or other relevant signals.
+Current implementation checks whether the analyzed content contains:
 
-**Expected Inovix Implementation**
+- `http://`
+- `https://`
 
-The intended workflow is:
+A URL by itself does not automatically produce a malicious verdict.
 
-Suspicious URL
-↓
-Event Ingestion
-↓
-Normalization
-↓
-Detection and Analysis
-↓
-Risk Assessment
-↓
-Security Event
-↓
-Incident or Dashboard Display
+The URL indicator contributes to the overall set of findings used for risk calculation.
 
-**Status**
-
-Planned / Implementation Verification Required
-
-The exact Browser Guard, ML, threat-intelligence, correlation, incident, and response functionality must be confirmed before being documented as implemented.
+**Status: Implemented**
 
 ---
 
-## Brute-Force Scenario Mapping
+### Suspicious Social-Engineering Language
 
-**Research Finding**
+The current analyzer checks for selected suspicious phrases, including:
 
-Repeated failed authentication attempts can represent a pattern consistent with brute-force activity.
+- `verify account`
+- `urgent action`
+- `suspicious login`
 
-Relevant indicators may include:
+When detected, the rule-based detector creates a finding for suspicious social-engineering language.
 
-- Repeated failures
-- Source identifier or IP address
-- Target username or account
-- Attempt frequency
-- Time window
-- Number of attempts
-
-**Expected Inovix Implementation**
-
-Detection Rule
-↓
-Risk Assessment
-↓
-Security Event
-↓
-Possible Incident Creation
-
-**Status**
-
-Verify Implementation
-
-The exact detection threshold remains:
-
-**TBD — implementation threshold**
+**Status: Implemented**
 
 ---
 
-## Possible Port-Scan Scenario Mapping
+### Credential Request
 
-**Research Finding**
+The current analyzer checks for indicators related to credentials and authentication information.
 
-Multiple connection attempts across different destination ports may indicate reconnaissance or network service scanning.
+Examples include:
 
-Relevant indicators may include:
+- password
+- OTP
+- one-time password
+- login credential
+- credentials
 
-- Source identifier or IP address
-- Target system
-- Multiple destination ports
-- Connection frequency
-- Number of attempts
-- Time window
+When detected, the rule-based detector generates a high-severity finding.
 
-**Expected Inovix Implementation**
-
-Detection Rule
-↓
-Possible Port-Scan Detection
-↓
-Risk Assessment
-↓
-Security Event
-
-**Status**
-
-Verify Implementation
-
-The exact detection thresholds remain:
-
-**TBD — implementation threshold**
+**Status: Implemented**
 
 ---
 
-## Normal Activity Mapping
+### Financial Request
 
-**Research Finding**
+The current analyzer checks for selected financial-request indicators.
 
-A security system should not treat every event as malicious.
+Examples include:
 
-Normal activity is required as a comparison scenario to demonstrate that events without sufficient suspicious indicators do not automatically create unnecessary incidents.
+- transfer money
+- send money
+- money transfer
+- UPI account
+- UPI ID
+- bank transfer
 
-**Expected Inovix Implementation**
+When detected, the rule-based detector generates a high-severity finding.
 
-Normal Event
-↓
-Analysis
-↓
-No Significant Detection
-↓
-No Unnecessary Incident
-
-**Status**
-
-Verify Implementation
-
-The final behavior depends on the implemented detection, risk, correlation, and incident logic.
+**Status: Implemented**
 
 ---
 
-## Risk and Severity Mapping
+### Possible Impersonation
 
-The current Inovix prototype documentation uses the following risk bands:
+The current analyzer checks for selected phrases that may indicate impersonation of a trusted organization.
 
-| Score | Risk Level |
+Examples include:
+
+- I am from your bank
+- I'm from your bank
+- I am from the bank
+- from your bank
+
+When detected, the rule-based detector generates a critical-severity finding.
+
+This detection is based on selected language indicators and does not independently prove that impersonation has occurred.
+
+**Status: Implemented**
+
+---
+
+## Risk Scoring Implementation
+
+The current security engine calculates a normalized risk score from the severity of generated findings.
+
+Current severity weights are:
+
+| Finding Severity | Score Weight |
+|---|---:|
+| LOW | 20 |
+| MEDIUM | 50 |
+| HIGH | 80 |
+| CRITICAL | 100 |
+
+The combined score is limited to a maximum value of 100.
+
+**Status: Implemented**
+
+---
+
+## Verdict Implementation
+
+The current security engine generates verdicts using the calculated risk score.
+
+| Risk Score | Verdict |
 |---|---|
-| 0–29 | Low |
-| 30–59 | Medium |
-| 60–79 | High |
-| 80–100 | Critical |
+| 0 | SAFE |
+| 1–79 | SUSPICIOUS |
+| 80–100 | MALICIOUS |
+| Outside 0–100 | UNKNOWN |
 
-These are **Inovix prototype risk bands**.
+These verdict thresholds describe the current implementation.
 
-They are not presented as industry-standard production thresholds.
+They are separate from the Inovix prototype risk-band documentation and must not be presented as universal industry-standard thresholds.
 
-The implementation must be verified to confirm whether these ranges are currently used by the Security Engine and backend workflow.
-
-**Status: Verify Implementation**
+**Status: Implemented**
 
 ---
 
-## Implementation Status Rules
+## Impact Assessment Implementation
 
-Documentation should use the following categories:
+The current implementation performs a basic impact assessment.
 
-### Implemented
+| Risk Score | Impact Level |
+|---|---|
+| 0 | LOW |
+| 1–79 | MEDIUM |
+| 80–100 | HIGH |
 
-The functionality exists in the current codebase and its behavior has been verified.
+The impact assessment currently provides a basic explanation based on the generated risk score.
 
-### Verify Implementation
-
-Relevant code or project structure may exist, but the exact behavior still needs confirmation from the implementation or responsible developer.
-
-### Planned
-
-The functionality is part of the intended project direction but is not yet confirmed as implemented.
-
-### Pending
-
-The feature or integration requires further technical decisions or implementation.
-
-### Research
-
-The information is based on security research and is not automatically evidence that the corresponding functionality exists in Inovix.
+**Status: Implemented**
 
 ---
 
-## Verification Workflow
+## Response Decision Implementation
+
+The current security engine creates a safe response decision.
+
+| Verdict | Response Action |
+|---|---|
+| SAFE | NO_ACTION |
+| SUSPICIOUS | MONITOR |
+| MALICIOUS | REVIEW |
+
+The current implementation does not perform actual containment, blocking, or remediation.
+
+The response structure represents a safe decision or recommendation only.
+
+**Status: Implemented**
+
+---
+
+## Verification Implementation
+
+The current verification stage is a safe foundation structure.
+
+Response actions are not actually executed by the current security engine.
+
+The verification result therefore represents that execution has not occurred.
+
+**Status: Implemented as a safe result structure**
+
+---
+
+## Pending Research Areas
+
+### Brute-Force Detection
+
+Research identifies repeated failed authentication attempts as a potential detection scenario.
+
+The current codebase does not yet confirm a dedicated brute-force detection rule.
+
+Required implementation details include:
+
+- Event format
+- Source identifier
+- Account or username
+- Attempt count
+- Time window
+- Detection threshold
+
+**Status: Pending**
+
+---
+
+### Possible Port-Scan Detection
+
+Research identifies repeated connection attempts across multiple destination ports as a potential scanning pattern.
+
+The current codebase does not yet confirm a dedicated port-scan detection rule.
+
+Required implementation details include:
+
+- Event format
+- Source identifier
+- Target system
+- Destination ports
+- Number of attempts
+- Time window
+- Detection threshold
+
+**Status: Pending**
+
+---
+
+### Machine-Learning / Anomaly Detection
+
+The repository contains an ML-related project structure, but the current implementation does not confirm active machine-learning analysis.
+
+Anomaly scoring must remain documented as planned or pending until implementation is verified.
+
+**Status: Pending**
+
+---
+
+### Threat Intelligence
+
+The repository contains a threat-intelligence-related project structure, but the current implementation does not confirm active external threat-intelligence enrichment.
+
+IOC enrichment, reputation analysis, or other threat-intelligence functionality must not be described as implemented.
+
+**Status: Pending**
+
+---
+
+### Event Correlation
+
+The intended Inovix workflow includes correlation of related security events.
+
+The current security engine implementation does not yet confirm an event-correlation mechanism.
+
+**Status: Pending**
+
+---
+
+### Incident Creation
+
+The current security engine returns structured findings, risk information, impact information, response decisions, and verification information.
+
+A separate incident creation and management workflow is not currently confirmed.
+
+**Status: Pending**
+
+---
+
+### Browser Guard
+
+The repository contains a browser-extension directory, but active Browser Guard functionality is not currently confirmed by the available implementation.
+
+**Status: Pending**
+
+---
+
+### SOC / Dashboard
+
+The frontend structure is currently not confirmed as an implemented SOC or dashboard application.
+
+Dashboard behavior, incident visualization, and security-event display remain pending.
+
+**Status: Pending**
+
+---
+
+## Documentation Rule
+
+This mapping must be updated whenever implementation changes.
+
+The following workflow should be followed:
 
 Research Finding
+
 ↓
-Expected Implementation
+
+Implementation
+
 ↓
-Codebase Review
+
+Developer Verification
+
 ↓
-Developer Confirmation
-↓
+
 Documentation Update
-↓
-Implementation Status Confirmed
 
-Documentation must not move from **Planned**, **Pending**, or **Verify Implementation** to **Implemented** without verification.
+A research finding must not automatically be described as an implemented Inovix capability.
 
-## Documentation Status
+Likewise, an implemented feature should be reflected in the relevant security, demo, architecture, and README documentation after verification.
 
-This document provides the initial cross-reference between Inovix security research and implementation.
+---
 
-It should be updated whenever a relevant feature is implemented, changed, verified, or removed from the project scope.
+## Current Conclusion
+
+The current implementation confirms a foundation for:
+
+- Input validation
+- Input normalization
+- Rule-based security analysis
+- Explainable findings
+- Risk scoring
+- Verdict generation
+- Basic impact assessment
+- Safe response decisions
+- Verification result structure
+
+The following major MVP capabilities remain pending or require further implementation verification:
+
+- Brute-force detection
+- Possible port-scan detection
+- AI or ML anomaly scoring
+- Threat-intelligence enrichment
+- Event correlation
+- Incident creation
+- Browser Guard integration
+- SOC/dashboard integration
+- Automated prevention or blocking
+
+This document represents the current research-to-implementation status and should be revised as additional Inovix components are implemented and verified.

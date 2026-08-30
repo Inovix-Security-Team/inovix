@@ -73,18 +73,13 @@ The general branch workflow is:
 6. Push the branch to the remote repository.
 7. Create a Pull Request for review and merging.
 
-A general example is:
+*A general example is:*
 
 git checkout main
-
 git pull
-
 git checkout -b <branch-name>
-
 git add .
-
 git commit -m "<clear-commit-message>"
-
 git push -u origin <branch-name>
 
 Branch naming conventions and review requirements should follow the workflow agreed upon by the Inovix development team.

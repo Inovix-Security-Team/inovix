@@ -1,269 +1,340 @@
-# Detection Scenarios
+# Secondary Detection Scenarios
+
 ## Overview
 
-This document defines controlled and synthetic detection scenarios for the Inovix MVP.
+This document defines the secondary controlled detection scenarios for the Inovix MVP.
 
-The scenarios are intended to support security research, implementation planning, testing, and demonstration.
+The scenarios are designed for security research, controlled demonstration, detection validation, and implementation-backed documentation.
 
-No unauthorized systems are accessed, scanned, or attacked as part of these scenarios.
+The documented scenarios are:
+
+1. Brute-Force Activity
+2. Possible Port-Scanning Activity
+3. Normal Activity
+
+All scenarios must use synthetic or otherwise authorized test data.
 
 ---
 
+# Scenario 1: Brute-Force Activity
 
+## Attack Scenario
 
-## Scenario 1: Brute-Force Activity
-### Attack Scenario
+A source generates repeated failed login attempts against an account or service.
 
-A source repeatedly attempts to authenticate using unsuccessful login attempts.
+The controlled scenario represents possible brute-force activity.
 
-The expected flow is:
+Expected flow:
 
 Repeated Failed Login Attempts
+
 ↓
+
 Security Events
+
 ↓
+
 Detection
+
 ↓
+
 Risk Assessment
+
 ↓
-Incident
 
+Possible Incident
 
+↓
 
-### Observable Indicators
+Response
+
+## Observable Indicators
 
 Relevant indicators may include:
 
-- Repeated failed login attempts
-- Source IP address
-- Target username or account
-- Number of attempts
-- Frequency of attempts
-- Time window between attempts
+- Repeated failed login attempts.
+- Source IP address or source identifier.
+- Target account or username.
+- Attempt frequency.
+- Number of failed attempts.
+- Relevant timestamps.
+- Time window of the activity.
 
+## Expected Event
 
+The security events should represent repeated failed authentication attempts using controlled or synthetic data.
 
-### Expected Event
+The exact event schema depends on the implemented monitoring and ingestion components.
 
-The event should represent failed authentication activity.
+Status: TBD — implementation-dependent event schema.
 
-The exact event schema depends on the implemented event-ingestion and normalization logic.
+## Detection Condition
 
+The intended detection logic is based on identifying a pattern of repeated failed authentication attempts.
 
+The exact values for:
 
-### Detection Condition
+- Number of attempts.
+- Time window.
+- Attempt frequency.
+- Source grouping.
+- Target account grouping.
 
-The detection logic should identify a suspicious pattern of repeated failed authentication attempts.
+must match the implemented detection logic.
 
-The exact number of attempts, frequency, and time-window threshold are:
+Until confirmed:
 
+**Threshold: TBD — implementation threshold**
 
+## Severity
 
-**TBD — implementation threshold**
+The severity depends on the evidence available and the implemented classification logic.
 
-No fixed threshold should be documented until confirmed by the Security Engine implementation.
+Repeated failed authentication attempts may represent suspicious activity, but the available context should be considered before assigning a final classification.
 
+## Expected Evidence
 
+Evidence may include:
 
-### Expected Severity
+- Source identifier.
+- Target account.
+- Number of failed attempts.
+- Relevant timestamps.
+- Detection reasoning.
+- Security findings.
+- Risk score.
+- Severity or risk classification.
+- Response decision where implemented.
 
-Severity should depend on the evidence and implemented scoring logic.
+## Expected Inovix Response
 
-Repeated failed authentication activity with stronger evidence may produce a higher severity and risk level.
+Depending on the implemented workflow, the system may:
 
+- Record the security event.
+- Generate a detection finding.
+- Assign a risk assessment.
+- Support incident creation where implemented.
+- Recommend monitoring or review.
 
+No automated account blocking or containment should be claimed unless separately implemented and verified.
 
-### Expected Evidence
+## Limitations
 
-Expected evidence may include:
+Repeated failed login attempts do not automatically prove a successful brute-force attack.
 
-- Source identifier or IP address
-- Target account or username
-- Failed attempt count
-- Relevant timestamps
-- Detection rule or reason
-- Severity
-- Risk score
-
-Only evidence produced by the implemented system should be presented as confirmed output.
-
-
-
-### Expected Outcome
-
-The suspicious activity may result in:
-
-- A detection result
-- A calculated risk score
-- A security event
-- Incident creation, if supported by the implemented workflow
-
-The final response behavior must be verified against the implementation.
+The scenario uses controlled or synthetic events and does not involve unauthorized access attempts.
 
 ---
 
+# Scenario 2: Possible Port-Scanning Activity
 
+## Attack Scenario
 
-## Scenario 2: Possible Port-Scan Activity
-### Attack Scenario
+A source generates multiple connection attempts across different destination ports or services.
 
-A source generates multiple connection attempts that may indicate reconnaissance or scanning behavior.
+The resulting pattern may indicate reconnaissance or possible network service scanning.
 
-The expected flow is:
+Expected flow:
 
 Multiple Connection Attempts
+
 ↓
+
+Security Events
+
+↓
+
 Suspicious Scanning Pattern
+
 ↓
+
 Detection
+
 ↓
+
 Risk Assessment
 
+↓
 
+Security Event
 
-### Observable Indicators
+## Observable Indicators
 
 Relevant indicators may include:
 
-- Multiple destination ports
-- Multiple connection attempts
-- Source identifier or IP address
-- Target system
-- Connection timestamps
-- Frequency of connection attempts
+- Source IP address or source identifier.
+- Target system.
+- Multiple destination ports.
+- Number of connection attempts.
+- Attempt frequency.
+- Relevant timestamps.
+- Connection pattern.
 
+## Expected Event
 
+The demonstration should use synthetic or authorized connection events.
 
-### Expected Event
+The scenario must not involve scanning unauthorized systems.
 
-The event should represent connection activity that can be evaluated for suspicious scanning patterns.
+The exact event format depends on the implemented monitoring and ingestion components.
 
-The exact event format depends on the implemented event-ingestion logic.
+Status: TBD — implementation-dependent event schema.
 
+## Detection Condition
 
+The intended detection logic identifies patterns that may be consistent with possible port-scanning activity.
 
-### Detection Condition
+The exact detection conditions for:
 
-The detection logic should identify patterns consistent with possible port scanning.
+- Number of ports.
+- Number of connection attempts.
+- Time window.
+- Frequency.
+- Required event pattern.
 
-The exact thresholds for:
+must match the implemented Security Engine logic.
 
-- Number of ports
-- Number of connection attempts
-- Time window
-- Required pattern
+Until confirmed:
 
-are:
+**Threshold: TBD — implementation threshold**
 
+## Severity
 
+The severity depends on the available evidence and implemented classification logic.
 
-**TBD — implementation threshold**
+Multiple connection attempts alone should not automatically be treated as proof of malicious activity.
 
-A possible port scan should not automatically be described as a confirmed attack without sufficient evidence.
+The scenario should therefore be described as a **possible port scan** unless the available evidence supports a stronger conclusion.
 
+## Expected Evidence
 
+Evidence may include:
 
-### Expected Severity
+- Source identifier.
+- Target system.
+- Destination ports.
+- Connection attempt count.
+- Relevant timestamps.
+- Detection reasoning.
+- Security findings.
+- Risk score.
+- Severity or risk classification.
 
-Severity should depend on the available evidence and implemented risk-scoring logic.
+## Expected Inovix Response
 
-The scenario should reflect uncertainty where the available evidence does not confirm malicious intent.
+Depending on the implemented workflow, Inovix may:
 
+- Record the security event.
+- Identify a suspicious connection pattern.
+- Generate a detection finding.
+- Assign a risk assessment.
+- Support further investigation or incident handling where implemented.
 
+Any automated blocking, containment, or remediation must remain marked as Planned or TBD unless verified.
 
-### Expected Evidence
+## Limitations
 
-Expected evidence may include:
+The scenario represents controlled or synthetic activity.
 
-- Source identifier or IP address
-- Target system
-- Destination ports
-- Connection count
-- Relevant timestamps
-- Detection reasoning
-- Severity
-- Risk score
+No unauthorized systems may be scanned.
 
-
-
-### Expected Outcome
-
-The activity may generate:
-
-- A possible port-scan detection
-- A risk assessment
-- A security event
-
-Incident creation depends on the implemented correlation and incident workflow.
+Multiple connection attempts alone do not necessarily prove malicious reconnaissance.
 
 ---
 
+# Scenario 3: Normal Activity
 
+## Scenario
 
-## Scenario 3: Normal Activity
-### Scenario
+A normal security-related event passes through the Inovix workflow without producing sufficient evidence of suspicious or malicious activity.
 
-A normal event is processed through the Inovix workflow without indicators that meet the implemented detection conditions.
-
-The expected flow is:
+Expected flow:
 
 Normal Event
+
 ↓
+
 Analysis
+
 ↓
+
 No Significant Detection
+
 ↓
+
+Low or No Risk
+
+↓
+
 No Unnecessary Incident
 
+## Purpose
 
+This scenario demonstrates that Inovix should not classify every event as malicious or suspicious without sufficient evidence.
 
-### Purpose
+It supports the requirement that uncertainty and lack of suspicious indicators should be handled appropriately.
 
-This scenario demonstrates that Inovix should not treat every event as malicious.
+## Observable Indicators
 
-The absence of malicious indicators should be handled according to the available evidence and implemented detection logic.
+The event should not contain sufficient implemented indicators to trigger a significant detection.
 
+Depending on the input type, normal characteristics may include:
 
+- No suspicious social-engineering language.
+- No credential-related request.
+- No financial request.
+- No impersonation indicators.
+- No other implemented detection conditions.
 
-### Expected Evidence
+The exact result must match the current implementation.
 
-Depending on implementation, the result may include:
+## Expected Evidence
 
-- Event information
-- Analysis result
-- Detection status
-- Risk score
-- Explanation or reason for no significant detection
+Evidence may include:
 
+- Submitted event.
+- Analysis result.
+- Detection status.
+- Risk score.
+- Verdict.
+- Explanation for the result.
 
+## Expected Inovix Response
 
-### Expected Outcome
+The expected behavior is:
 
-Normal activity should not create an unnecessary high-severity incident.
+- Process the event.
+- Perform supported analysis.
+- Avoid generating unnecessary high-risk findings.
+- Avoid creating an unnecessary incident where incident handling is implemented.
+- Return the appropriate safe or low-risk result based on the actual implementation.
 
-The exact behavior must match the implemented detection, correlation, and incident logic.
+## Limitations
+
+A normal result only reflects the evidence and detection capabilities currently available to the implementation.
+
+It must not be interpreted as a guarantee that the event is completely harmless.
 
 ---
 
+# Safety Requirements
 
-
-## Scenario Safety
-
-All scenarios in this document are intended for controlled testing and demonstration.
-
-The following rules apply:
+All secondary detection scenarios must follow these rules:
 
 - Use synthetic or authorized test data.
-- Do not scan unauthorized systems.
+- Do not attack unauthorized systems.
+- Do not scan third-party systems without explicit permission.
 - Do not use real stolen credentials.
 - Do not execute malware.
-- Do not claim detection or blocking behavior unless verified.
-- Keep implementation thresholds marked as TBD until confirmed.
+- Do not expose secrets.
+- Clearly distinguish simulated activity from verified implementation behavior.
 
+---
 
+# Documentation Status
 
-## Documentation Status
+These scenarios provide the secondary security research and controlled demonstration foundation for the Inovix MVP.
 
-These scenarios provide the initial security research and testing foundation for the Inovix MVP.
+Implementation-specific detection thresholds, event schemas, incident criteria, response behavior, and correlation logic must only be documented as implemented after verification.
 
-Implementation-specific detection conditions, thresholds, evidence, and response behavior must be updated after verification with the relevant developers.
+Any remaining TBD values represent information that has not yet been confirmed by the relevant implementation.

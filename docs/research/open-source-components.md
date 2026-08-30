@@ -2,175 +2,299 @@
 
 ## Overview
 
-This document tracks open-source and third-party components that are relevant to the Inovix MVP.
+This document tracks open-source and third-party components relevant to the Inovix MVP.
 
-A component must not be described as implemented in Inovix unless its use has been confirmed by the development team or verified in the project implementation.
+A component is only described as implemented when its use is confirmed by the current codebase or responsible developer.
 
-Proposed or evaluated tools are clearly separated from confirmed components.
-
----
-
-## Proposed Security-Input Components
-
-### Wazuh
-
-**Purpose:** Security monitoring, log collection, and security event generation.
-
-**Potential Use in Inovix:** Wazuh may provide security events or monitoring data that could be processed by the Inovix workflow.
-
-**Implementation Status:** Proposed / Not Yet Confirmed
-
-**License:** GPL-2.0
-
-**Integration Method:** TBD — depends on final architecture.
-
-**Data Produced:** Security alerts, log events, monitoring information, and related security telemetry.
-
-**What Inovix Adds:** Inovix may normalize, analyze, correlate, score, and present relevant security information.
-
-**Limitations:** Wazuh functionality is third-party functionality and must not be presented as functionality built entirely by Inovix.
+Components that are proposed, planned, or not yet integrated are clearly identified.
 
 ---
 
-### Suricata
+## FastAPI
 
-**Purpose:** Network security monitoring and intrusion detection.
+### Tool
 
-**Potential Use in Inovix:** Suricata may provide network-related security events for further processing and analysis.
+FastAPI
 
-**Implementation Status:** Proposed / Not Yet Confirmed
+### Purpose
 
-**License:** GPL-2.0
+FastAPI provides the backend API framework for Inovix.
 
-**Integration Method:** TBD — depends on final architecture.
+### Where Used
 
-**Data Produced:** Network security alerts and event information.
+The current backend implementation uses FastAPI for API routing and application services.
 
-**What Inovix Adds:** Inovix may process Suricata-generated events together with its own detection, risk, correlation, incident, or reporting workflow.
+Confirmed API components include:
 
-**Limitations:** Detection capabilities provided directly by Suricata remain third-party functionality.
+- Application setup
+- API versioning
+- Health-check endpoint
+- Analysis endpoint
 
----
+### License
 
-### Zeek
+MIT License.
 
-**Purpose:** Network security monitoring and network event generation.
+### Integration Method
 
-**Potential Use in Inovix:** Zeek may provide structured network telemetry or event data for analysis.
+FastAPI is used directly within the Inovix backend application.
 
-**Implementation Status:** Proposed / Not Yet Confirmed
+### Data Produced
 
-**License:** BSD-style open-source license
+The backend returns structured API responses for supported endpoints.
 
-**Integration Method:** TBD — depends on final architecture.
+### What Inovix Adds
 
-**Data Produced:** Network activity and protocol-level event data.
+Inovix defines the application structure, API schemas, analysis workflow, and security-related functionality built around the backend framework.
 
-**What Inovix Adds:** Inovix may normalize and combine relevant security events with its own analysis and risk workflow.
+### Status
 
-**Limitations:** Zeek-generated network visibility remains third-party functionality.
-
----
-
-## Proposed Platform Components
-
-### FastAPI
-
-**Purpose:** Backend API framework.
-
-**Potential Use in Inovix:** The current repository contains a backend foundation structured around API endpoints.
-
-**Implementation Status:** Implementation must be verified against the current backend codebase.
-
-**License:** MIT License
-
-**Integration Method:** Used as part of the backend application layer where confirmed.
-
-**Data Produced:** API request and response handling.
-
-**What Inovix Adds:** The application-specific API logic, security workflow, validation, and integration are part of the Inovix project.
-
-**Limitations:** FastAPI is a third-party framework and must not be presented as developed by Inovix.
+**Implemented**
 
 ---
 
-### SQLite
+## SQLite
 
-**Purpose:** Lightweight database storage.
+### Tool
 
-**Potential Use in Inovix:** SQLite may be used for local storage during prototype or MVP development.
+SQLite
 
-**Implementation Status:** Proposed / Verify Current Implementation
+### Purpose
 
-**License:** Public domain
+SQLite may be used for local data storage depending on the final architecture.
 
-**Integration Method:** TBD — depends on confirmed storage architecture.
+### Where Used
 
-**Data Produced:** Structured locally stored application data.
+Current repository implementation has not yet confirmed active SQLite integration.
 
-**What Inovix Adds:** The Inovix data model, application logic, and security workflow remain project-specific.
+### License
 
-**Limitations:** Database functionality itself is provided by SQLite.
+Public domain.
 
----
+### Integration Method
 
-### scikit-learn
+TBD — implementation not confirmed.
 
-**Purpose:** Machine-learning utilities and algorithms.
+### Data Produced
 
-**Potential Use in Inovix:** May support anomaly scoring or other ML-based analysis if included in the final implementation.
+TBD.
 
-**Implementation Status:** Planned / Not Yet Confirmed
+### What Inovix Adds
 
-**License:** BSD 3-Clause
+If integrated, Inovix would define the application data models, storage logic, and security-related data handling.
 
-**Integration Method:** TBD — depends on the final ML implementation.
+### Limitations
 
-**Data Produced:** Model predictions, anomaly scores, or other analysis output.
+SQLite usage and final storage architecture are not yet confirmed.
 
-**What Inovix Adds:** Inovix-specific feature selection, security context, risk interpretation, and workflow integration.
+### Status
 
-**Limitations:** Machine-learning functionality must not be claimed as implemented until verified in the codebase.
-
----
-
-### Streamlit
-
-**Purpose:** Rapid application and dashboard development.
-
-**Potential Use in Inovix:** May be used to provide a prototype or MVP interface.
-
-**Implementation Status:** Proposed / Verify Current Implementation
-
-**License:** Apache License 2.0
-
-**Integration Method:** TBD — depends on confirmed frontend or dashboard implementation.
-
-**Data Produced:** User interface and visualization output.
-
-**What Inovix Adds:** The security-focused dashboard logic, workflows, and application-specific presentation.
-
-**Limitations:** Streamlit is a third-party application framework.
+**TBD — implementation not confirmed**
 
 ---
 
-### Plotly
+## scikit-learn
 
-**Purpose:** Data visualization.
+### Tool
 
-**Potential Use in Inovix:** May support charts and visual representation of security events, risk, or incidents.
+scikit-learn
 
-**Implementation Status:** Proposed / Verify Current Implementation
+### Purpose
 
-**License:** MIT License
+scikit-learn is a potential machine-learning component for anomaly detection or other security analysis.
 
-**Integration Method:** TBD — depends on confirmed dashboard implementation.
+### Where Used
 
-**Data Produced:** Interactive or static data visualizations.
+The current repository contains an ML-related structure, but machine-learning functionality is not confirmed as implemented.
 
-**What Inovix Adds:** Inovix-specific security data, analysis context, and dashboard workflows.
+### License
 
-**Limitations:** Visualization capabilities provided by Plotly remain third-party functionality.
+BSD 3-Clause License.
+
+### Integration Method
+
+TBD — implementation not confirmed.
+
+### Data Produced
+
+Potential future outputs may include anomaly scores or classification results.
+
+These outputs must not be described as current Inovix functionality until implementation is confirmed.
+
+### What Inovix Adds
+
+If integrated, Inovix would define the security events, features, analysis workflow, and use of any generated results.
+
+### Limitations
+
+No confirmed machine-learning detection implementation is currently documented.
+
+### Status
+
+**Planned / TBD**
+
+---
+
+## Wazuh
+
+### Tool
+
+Wazuh
+
+### Purpose
+
+Wazuh is a proposed security monitoring and event-data source.
+
+### Where Used
+
+No confirmed Wazuh integration exists in the current Inovix implementation.
+
+### Integration Method
+
+TBD.
+
+### Data Produced
+
+Potential future data may include security alerts, monitoring events, or host-related information.
+
+### What Inovix Adds
+
+If integrated, Inovix would process or analyze selected security data within its own workflow.
+
+### Limitations
+
+Wazuh is currently a proposed component and must not be presented as implemented.
+
+### Status
+
+**Proposed — not confirmed as implemented**
+
+---
+
+## Suricata
+
+### Tool
+
+Suricata
+
+### Purpose
+
+Suricata is a proposed network security monitoring and intrusion detection component.
+
+### Where Used
+
+No confirmed Suricata integration exists in the current Inovix implementation.
+
+### Integration Method
+
+TBD.
+
+### Data Produced
+
+Potential future outputs may include network security events and alerts.
+
+### What Inovix Adds
+
+If integrated, Inovix would define how selected events are ingested, analyzed, and displayed.
+
+### Limitations
+
+Suricata is currently a proposed component and must not be presented as implemented.
+
+### Status
+
+**Proposed — not confirmed as implemented**
+
+---
+
+## Zeek
+
+### Tool
+
+Zeek
+
+### Purpose
+
+Zeek is a proposed network monitoring and analysis component.
+
+### Where Used
+
+No confirmed Zeek integration exists in the current Inovix implementation.
+
+### Integration Method
+
+TBD.
+
+### Data Produced
+
+Potential future outputs may include structured network activity and event data.
+
+### What Inovix Adds
+
+If integrated, Inovix would define the ingestion and analysis workflow for selected security events.
+
+### Limitations
+
+Zeek is currently a proposed component and must not be presented as implemented.
+
+### Status
+
+**Proposed — not confirmed as implemented**
+
+---
+
+## Streamlit / Plotly
+
+### Tool
+
+Streamlit / Plotly
+
+### Purpose
+
+These tools are proposed for possible dashboard, visualization, or SOC-related functionality.
+
+### Where Used
+
+The current repository does not confirm an implemented frontend dashboard using Streamlit or Plotly.
+
+### Integration Method
+
+TBD.
+
+### Data Produced
+
+Potential future outputs may include security visualizations, incident information, and analysis results.
+
+### What Inovix Adds
+
+If integrated, Inovix would define the dashboard workflow, displayed security information, and user interaction.
+
+### Limitations
+
+Dashboard technology and implementation are not yet confirmed.
+
+### Status
+
+**Planned / TBD**
+
+---
+
+## Inovix-Built Components
+
+The following components are part of the Inovix project implementation and should not be described as third-party functionality:
+
+- Security Engine
+- Rule-based detection logic
+- Input validation
+- Input normalization
+- Risk scoring
+- Verdict generation
+- Basic impact assessment
+- Safe response decision structure
+- Verification result structure
+- Inovix backend application structure
+
+Third-party frameworks or libraries may support these components, but the Inovix application logic built around them is project-specific.
 
 ---
 
@@ -178,33 +302,21 @@ Proposed or evaluated tools are clearly separated from confirmed components.
 
 | Component | Purpose | Current Status |
 |---|---|---|
-| Wazuh | Security monitoring | Proposed |
-| Suricata | Network detection | Proposed |
-| Zeek | Network telemetry | Proposed |
-| FastAPI | Backend API | Verify implementation |
-| SQLite | Data storage | Proposed / Verify |
-| scikit-learn | ML and anomaly analysis | Planned |
-| Streamlit | Dashboard or interface | Proposed / Verify |
-| Plotly | Data visualization | Proposed / Verify |
+| FastAPI | Backend API framework | Implemented |
+| SQLite | Data storage | TBD — implementation not confirmed |
+| scikit-learn | ML / anomaly analysis | Planned / TBD |
+| Wazuh | Security monitoring input | Proposed |
+| Suricata | Network security input | Proposed |
+| Zeek | Network monitoring input | Proposed |
+| Streamlit / Plotly | Dashboard / visualization | Planned / TBD |
+| Inovix Security Engine | Security analysis | Implemented |
+
+---
 
 ## Documentation Rule
 
-Open-source or third-party functionality must always be clearly distinguished from functionality developed by Inovix.
+Open-source and third-party components must be clearly distinguished from functionality built by Inovix.
 
-The documentation should follow this rule:
+A proposed or researched component must not be presented as implemented until its actual integration is confirmed through the codebase or responsible developer.
 
-**Third-Party Component**
-↓
-Provides underlying capability or data
-
-**Inovix**
-↓
-Adds project-specific processing, analysis, detection, correlation, risk assessment, incident handling, response workflow, or presentation
-
-A proposed component must remain marked as proposed until its use is confirmed by the team or verified in the implementation.
-
-## Documentation Status
-
-This document represents the current research and component-tracking foundation.
-
-Implementation status must be updated as the project architecture and codebase are verified.
+This document must be updated when new third-party components are integrated into the Inovix MVP.

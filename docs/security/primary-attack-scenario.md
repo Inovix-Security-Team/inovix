@@ -1,202 +1,295 @@
+
 # Primary Attack Scenario
 
-## Scenario Overview
+## Overview
 
-The primary controlled attack scenario for the Inovix MVP demonstrates how a suspicious URL can be identified, analyzed, assigned a risk level, and converted into a security event for further correlation and incident handling.
+This document defines the primary controlled attack scenario for the Inovix MVP demonstration.
 
-The demonstration uses a safe and synthetic phishing or suspicious URL scenario. No real malware, stolen credentials, or unauthorized systems are involved.
+The selected scenario is:
 
+Phishing / Suspicious URL
 
+The scenario is designed for controlled demonstration, security research, detection validation, and documentation purposes.
+
+No real phishing campaign, unauthorized access attempt, malware execution, or attack against an unauthorized system is required.
+
+---
 
 ## Attack Scenario
 
-The demonstration flow is:
+A user encounters a suspicious or phishing-style URL.
 
-Suspicious URL
+The URL represents a potential attempt to direct the user toward malicious, deceptive, or attacker-controlled content.
+
+The controlled demonstration flow is:
+
+Phishing / Suspicious URL
+
 ↓
-Browser Guard
+
+Browser Guard or Event Input
+
 ↓
+
 URL Analysis
+
 ↓
-Rules + ML + Threat Intelligence
+
+Security Analysis
+
 ↓
-Risk Score
+
+Detection
+
 ↓
-Warn / Controlled Block
+
+Risk Assessment
+
 ↓
+
 Security Event
-↓
-Correlation
-↓
-Incident
-↓
-SOC
 
-The exact implementation of each component must be verified against the current codebase before being documented as implemented.
+↓
 
+Response
 
+↓
+
+Incident / SOC Display
+
+The exact implementation of Browser Guard, machine learning, threat intelligence, event correlation, incident creation, response, and SOC display depends on the current implementation status.
+
+---
 
 ## Attacker Objective
 
-The simulated attacker objective is to convince a user to interact with a suspicious or phishing-style URL.
+The simulated attacker objective is to encourage a user to interact with a suspicious link that may be associated with phishing or social-engineering activity.
 
-In a real-world attack, such a URL could potentially be used for credential theft, malicious downloads, redirection, or other harmful activity.
+Possible attacker objectives may include:
 
-For the Inovix MVP demonstration, the scenario remains controlled and synthetic.
+- Redirecting a user to deceptive content.
+- Requesting sensitive information.
+- Attempting credential theft.
+- Encouraging a financial action.
+- Impersonating a trusted organization.
 
+This controlled scenario does not require an actual compromise or successful credential theft.
 
+---
 
 ## User and Device Impact
 
-If a suspicious URL is successfully accessed without detection, potential impacts may include:
+If a real phishing attack were successful, possible impacts could include:
 
-- Credential exposure
-- Exposure to malicious content
-- Unauthorized redirection
-- Download of potentially harmful files
-- Increased risk to the affected user or device
+- Exposure of sensitive information.
+- Credential compromise.
+- Financial loss.
+- Unauthorized account access.
+- Interaction with malicious or deceptive content.
 
-The exact prevention capabilities of Inovix remain dependent on the implemented response functionality.
+For the Inovix MVP demonstration, these impacts are treated as potential outcomes for security analysis purposes.
 
+The demonstration does not claim that an actual user or device was compromised.
 
+---
 
 ## Expected Security Signals
 
-The suspicious URL may generate observable indicators such as:
+Depending on the available input and implementation, the scenario may contain observable indicators such as:
 
-- Suspicious domain or URL structure
-- Unusual URL patterns
-- Known or suspected indicators of compromise
-- Reputation or threat-intelligence matches
-- Other characteristics identified by the implemented detection logic
+- URL presence.
+- Suspicious social-engineering language.
+- Credential-related requests.
+- Financial requests.
+- Possible impersonation language.
 
-Detection conditions and scoring thresholds must not be assumed unless confirmed by the implementation.
+These indicators provide the security signals used for analysis and detection.
 
-
+---
 
 ## Detection Point
 
-The expected detection point is the Browser Guard or another implemented Inovix event-ingestion component.
+The current Security Engine foundation processes supported input through the following flow:
 
-The input is expected to enter the Inovix security workflow where it can be normalized and evaluated by the available detection mechanisms.
+Validation
 
-
-
-## Detection Process
-
-The intended analysis flow is:
-
-Input
 ↓
+
 Normalization
+
 ↓
+
+Analysis
+
+↓
+
 Rule-Based Detection
-↓
-ML / Anomaly Analysis
-↓
-Threat Intelligence Enrichment
-↓
-Risk Assessment
 
-The availability and implementation status of ML, threat intelligence, correlation, and other components must be verified before they are presented as implemented functionality.
+↓
 
+Risk Scoring
 
+↓
+
+Verdict
+
+↓
+
+Impact Assessment
+
+↓
+
+Response Decision
+
+↓
+
+Verification
+
+The current implementation uses basic rule-based analysis and detection.
+
+Machine learning, anomaly scoring, threat intelligence, event correlation, and other advanced analysis capabilities should only be described as implemented after they are confirmed by the responsible developers.
+
+---
 
 ## Expected Severity
 
-The expected severity depends on the evidence produced by the detection process.
+The severity of the scenario depends on the detected indicators.
 
-A suspicious URL with limited evidence may result in a lower severity level, while strong evidence of malicious activity may result in a higher severity level.
+The current Inovix prototype uses severity categories including:
 
-The final severity assigned during the demo must reflect the implemented Inovix prototype risk logic.
+- Low
+- Medium
+- High
+- Critical
 
+The severity associated with an individual finding is determined by the implemented detection logic.
 
+Severity should not automatically be treated as identical to overall risk.
+
+---
 
 ## Expected Risk
 
-Inovix prototype risk bands are:
+The Inovix prototype risk bands are:
 
-- Low: 0–29
-- Medium: 30–59
-- High: 60–79
-- Critical: 80–100
+| Score Range | Risk Level |
+|---|---|
+| 0–29 | Low |
+| 30–59 | Medium |
+| 60–79 | High |
+| 80–100 | Critical |
 
-These ranges are prototype-specific risk bands and are not claimed to be industry-standard production thresholds.
+These are Inovix prototype risk bands.
 
-The exact risk score for the demo scenario should be generated or confirmed by the implemented scoring logic.
+They are not presented as universal or industry-standard production thresholds.
 
+The final risk assessment depends on the evidence and implemented scoring logic.
 
+---
 
 ## Expected Evidence
 
-The demonstration should provide evidence that explains why the event was considered suspicious.
+The demonstration may provide evidence such as:
 
-Depending on implementation, evidence may include:
+- Submitted input or URL.
+- Source information.
+- Event type.
+- Normalized event data where available.
+- Detection findings.
+- Rule identifier.
+- Detection reason.
+- Security indicator.
+- Finding severity.
+- Risk score.
+- Verdict.
+- Impact assessment.
+- Response decision.
+- Verification status.
 
-- The analyzed URL or target
-- Detection indicators
-- Rule matches
-- Anomaly score
-- Threat-intelligence information
-- Risk score
-- Severity
-- Detection timestamp
-- Event or incident identifier
+Only evidence generated by the implemented Inovix components should be presented as confirmed demonstration output.
 
-Only evidence actually produced by the implementation should be shown as confirmed demo output.
-
-
+---
 
 ## Expected Inovix Response
 
-Based on the implemented response capability, Inovix may:
+The current Security Engine foundation supports safe response decisions.
 
-- Warn the user
-- Simulate a controlled block
-- Generate a security event
-- Send the event for correlation
-- Create or support creation of an incident
-- Display the result in the SOC or dashboard interface
+Depending on the analysis result, the response decision may include:
 
-The final documented response must distinguish between implemented behavior, planned behavior, and simulated demo behavior.
+- NO_ACTION
+- MONITOR
+- REVIEW
 
+These are currently safe recommendations or simulated outcomes.
 
+The current foundation does not claim to automatically perform real containment, remediation, blocking, or other destructive actions unless such functionality has been separately implemented and verified.
+
+---
 
 ## Expected Dashboard Result
 
-The expected dashboard or SOC result is a visible security record containing the relevant information about the suspicious activity.
+If dashboard or SOC functionality is implemented, the expected result may include relevant information such as:
 
-Depending on the implemented dashboard functionality, this may include:
+- Security event.
+- Detection findings.
+- Severity.
+- Risk score.
+- Verdict.
+- Impact assessment.
+- Response decision.
+- Incident information where implemented.
 
-- Event details
-- Detection status
-- Severity
-- Risk score
-- Supporting evidence
-- Incident status
-- Response status
+The exact dashboard fields and incident workflow remain dependent on the implemented frontend and SOC components.
 
-Dashboard fields and behavior remain TBD until verified with the responsible implementation owner.
+If the dashboard is not implemented, this section represents the intended demonstration output and must not be presented as currently implemented functionality.
 
-
+---
 
 ## Limitations
 
-This scenario is designed for a controlled hackathon demonstration.
+The primary attack scenario has the following limitations:
 
-The following limitations apply:
+- The scenario uses controlled or synthetic input.
+- Detection depends on the currently implemented analysis and rule logic.
+- A detected indicator does not automatically prove malicious activity.
+- URL presence alone should not be treated as proof of a malicious attack.
+- Machine learning and anomaly scoring remain dependent on implementation confirmation.
+- Threat-intelligence enrichment remains dependent on implementation confirmation.
+- Event correlation remains dependent on implementation confirmation.
+- Incident creation remains dependent on implementation confirmation.
+- Automated blocking or prevention must not be claimed unless verified.
 
-- The attack scenario uses safe and synthetic data.
-- No malware is executed.
-- No real credentials are used.
-- No unauthorized systems are accessed or scanned.
-- Detection thresholds must be based on implementation or remain TBD.
-- Third-party threat-intelligence or security tooling must not be presented as functionality built entirely by Inovix.
-- Planned components must remain clearly distinguished from implemented components.
+---
 
+## Safety
+
+This scenario must only be used in controlled and authorized environments.
+
+The demonstration must not:
+
+- Attack unauthorized systems.
+- Scan third-party systems without permission.
+- Use real stolen credentials.
+- Execute malware.
+- Expose secrets.
+- Claim successful blocking or prevention unless verified.
+
+Synthetic or authorized test data should be used wherever possible.
+
+---
 
 ## Documentation Status
 
-This document defines the security research and intended demonstration scenario for the Inovix MVP.
+This document defines the primary Inovix attack scenario for security research, controlled demonstration, and implementation-backed documentation.
 
-Implementation-specific behavior must be verified with the relevant developers before final documentation and demo claims are made.
+The scenario should be updated whenever the relevant Inovix implementation changes.
+
+Functionality must be classified according to its verified status:
+
+- Implemented — confirmed in the codebase or by the responsible developer.
+- Planned — intended functionality that is not yet implemented.
+- TBD — functionality or technical details that are not finalized.
+- Research — documented security research that is not automatically an implemented feature.
+- Demo/Synthetic — controlled demonstration data or behavior.
+
+No capability should be presented as implemented unless it has been verified.
