@@ -7,7 +7,7 @@ class AnalyzeRequest(BaseModel):
     target: str = Field(
         ...,
         min_length=1,
-        description="URL, domain, IP address, or other security target to analyze.",
+        description="Text or security target to analyze.",
     )
 
     @field_validator("target")
