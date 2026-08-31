@@ -1,19 +1,22 @@
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse
 
+from security_engine.engine import SecurityEngine
+
+
+security_engine = SecurityEngine()
+
 
 def analyze_target(request: AnalyzeRequest) -> AnalyzeResponse:
-    """
-    Temporary mock analysis.
+    """Analyze a target using the Security Engine."""
 
-    This service layer is intentionally separated from the API endpoint
-    so that the mock implementation can later be replaced by the
-    Inovix security engine.
-    """
+    result = security_engine.analyze(
+        content=request.target,
+    )
 
     return AnalyzeResponse(
         status="completed",
         target=request.target,
-        risk_level="low",
-        score=10,
-        message="Mock analysis completed successfully.",
+        risk_level=result.verdict.lower(),
+        score=result.risk_score,
+        message="Security analysis completed successfully.",
     )
