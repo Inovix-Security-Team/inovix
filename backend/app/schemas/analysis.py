@@ -1,12 +1,22 @@
-from pydantic import BaseModel, Field
+from typing import Literal
+
+from pydantic import BaseModel, Field, field_validator
 
 
 class AnalyzeRequest(BaseModel):
     target: str = Field(
         ...,
         min_length=1,
-        description="Text or security target to analyze.",
+        description="URL, domain, IP address, or other security target to analyze.",
     )
+
+    @field_validator("target")
+    @classmethod
+    def validate_target(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Target cannot be empty or whitespace.")
+
+        return value
 
 
 class FindingResponse(BaseModel):
