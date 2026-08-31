@@ -35,8 +35,7 @@ IPV4_PATTERN = re.compile(
 
 IPV6_PATTERN = re.compile(
     r"(?<![\w:])"
-    r"(?:"
-    r"(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}"
+    r"(?:(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,7}:"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,6}:[0-9A-Fa-f]{1,4}"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,5}(?::[0-9A-Fa-f]{1,4}){1,2}"
@@ -44,8 +43,7 @@ IPV6_PATTERN = re.compile(
     r"|(?:[0-9A-Fa-f]{1,4}:){1,3}(?::[0-9A-Fa-f]{1,4}){1,4}"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,2}(?::[0-9A-Fa-f]{1,4}){1,5}"
     r"|[0-9A-Fa-f]{1,4}:(?:(?::[0-9A-Fa-f]{1,4}){1,6})"
-    r"|:(?:(?::[0-9A-Fa-f]{1,4}){1,7}|:)"
-    r")"
+    r"|:(?:(?::[0-9A-Fa-f]{1,4}){1,7}|:))"
     r"(?![\w:])",
 )
 
@@ -91,14 +89,18 @@ def normalize_url(value: str) -> str:
             return value
 
         hostname = parsed.hostname
+
         if hostname is None:
             return value
 
         userinfo = ""
+
         if parsed.username is not None:
             userinfo = parsed.username
+
             if parsed.password is not None:
                 userinfo += f":{parsed.password}"
+
             userinfo += "@"
 
         host = hostname.lower()
@@ -107,6 +109,7 @@ def normalize_url(value: str) -> str:
             host = f"[{host}]"
 
         port = ""
+
         try:
             if parsed.port is not None:
                 port = f":{parsed.port}"
@@ -124,6 +127,7 @@ def normalize_url(value: str) -> str:
                 parsed.fragment,
             )
         )
+
     except ValueError:
         return value
 

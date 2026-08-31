@@ -9,6 +9,7 @@ class RuleBasedDetector(Detector):
         """Generate explainable security findings."""
 
         findings: list[Finding] = []
+
         if analysis.get("is_brute_force"):
             findings.append(
                 Finding(
@@ -43,7 +44,10 @@ class RuleBasedDetector(Detector):
                 Finding(
                     rule_id="SUSPICIOUS_LANGUAGE",
                     severity="MEDIUM",
-                    reason="Suspicious social-engineering language detected.",
+                    reason=(
+                        "Suspicious social-engineering language "
+                        "detected."
+                    ),
                     indicator="suspicious_keyword",
                 )
             )
@@ -68,9 +72,14 @@ class RuleBasedDetector(Detector):
                 Finding(
                     rule_id="IP_BASED_URL",
                     severity="HIGH",
-                    reason="URL uses a direct IP address instead of a domain.",
+                    reason=(
+                        "URL uses a direct IP address instead "
+                        "of a domain."
+                    ),
                     indicator="ip_based_url",
-                    value=ip_addresses[0] if ip_addresses else None,
+                    value=ip_addresses[0]
+                    if ip_addresses
+                    else None,
                 )
             )
 
@@ -89,7 +98,10 @@ class RuleBasedDetector(Detector):
                 Finding(
                     rule_id="SUSPICIOUS_TLD",
                     severity="MEDIUM",
-                    reason="URL contains a suspicious top-level domain.",
+                    reason=(
+                        "URL contains a suspicious top-level "
+                        "domain."
+                    ),
                     indicator="suspicious_tld",
                 )
             )
@@ -125,7 +137,10 @@ class RuleBasedDetector(Detector):
                 Finding(
                     rule_id="URGENCY_LANGUAGE",
                     severity="MEDIUM",
-                    reason="Urgent or time-pressure language detected.",
+                    reason=(
+                        "Urgent or time-pressure language "
+                        "detected."
+                    ),
                     indicator="urgency",
                 )
             )
@@ -135,7 +150,10 @@ class RuleBasedDetector(Detector):
                 Finding(
                     rule_id="THREAT_LANGUAGE",
                     severity="HIGH",
-                    reason="Threatening or account-suspension language detected.",
+                    reason=(
+                        "Threatening or account-suspension "
+                        "language detected."
+                    ),
                     indicator="threat_language",
                 )
             )
@@ -145,7 +163,10 @@ class RuleBasedDetector(Detector):
                 Finding(
                     rule_id="REWARD_SCAM",
                     severity="MEDIUM",
-                    reason="Potential reward or prize scam language detected.",
+                    reason=(
+                        "Potential reward or prize scam "
+                        "language detected."
+                    ),
                     indicator="reward_scam",
                 )
             )

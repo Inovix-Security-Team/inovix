@@ -4,8 +4,12 @@ from security_engine.models import Finding
 from security_engine.threat_intelligence.base import (
     ThreatIntelligenceProvider,
 )
-from security_engine.threat_intelligence.models import IOCStatus, IOCType
+from security_engine.threat_intelligence.models import (
+    IOCStatus,
+    IOCType,
+)
 from security_engine.threat_intelligence.store import LocalIOCStore
+
 
 class LocalThreatIntelligenceProvider(ThreatIntelligenceProvider):
     """Threat-intelligence provider backed by local IOC storage."""
@@ -40,7 +44,8 @@ class LocalThreatIntelligenceProvider(ThreatIntelligenceProvider):
                     f"{finding.reason} "
                     f"Local threat intelligence identifies this "
                     f"indicator as malicious "
-                    f"(source={ioc.source}, confidence={ioc.confidence})."
+                    f"(source={ioc.source}, "
+                    f"confidence={ioc.confidence})."
                 ),
             )
 
@@ -52,7 +57,8 @@ class LocalThreatIntelligenceProvider(ThreatIntelligenceProvider):
                     f"{finding.reason} "
                     f"Local threat intelligence identifies this "
                     f"indicator as suspicious "
-                    f"(source={ioc.source}, confidence={ioc.confidence})."
+                    f"(source={ioc.source}, "
+                    f"confidence={ioc.confidence})."
                 ),
             )
 

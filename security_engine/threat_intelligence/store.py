@@ -7,6 +7,7 @@ from security_engine.threat_intelligence.models import (
     IOCType,
 )
 
+
 class LocalIOCStore:
     """SQLite-backed local threat-intelligence IOC storage."""
 
@@ -14,7 +15,10 @@ class LocalIOCStore:
         self.database_path = database_path
 
         # Keep one connection alive for in-memory databases.
-        self._connection = sqlite3.connect(self.database_path, check_same_thread=False)
+        self._connection = sqlite3.connect(
+            self.database_path,
+            check_same_thread=False,
+        )
 
         self._initialize()
 
