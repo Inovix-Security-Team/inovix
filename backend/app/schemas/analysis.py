@@ -1,5 +1,3 @@
-from typing import Any
-
 from pydantic import BaseModel, Field
 
 
@@ -16,12 +14,6 @@ class FindingResponse(BaseModel):
     severity: str
     reason: str
     indicator: str
-
-
-class RiskResponse(BaseModel):
-    score: int = Field(..., ge=0, le=100)
-    level: str
-    reasons: list[str] = []
 
 
 class ImpactResponse(BaseModel):
