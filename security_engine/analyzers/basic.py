@@ -1,0 +1,195 @@
+import re
+
+from security_engine.analyzers.base import Analyzer
+from security_engine.models import AnalysisInput
+
+
+URL_PATTERN = re.compile(r"https?://[^\s]+", re.IGNORECASE)
+IP_PATTERN = re.compile(
+    r"\b(?:\d{1,3}\.){3}\d{1,3}\b"
+)
+
+
+class BasicAnalyzer(Analyzer):
+    """Rule-based analyzer for security indicators."""
+
+    def analyze(self, data: AnalysisInput) -> dict:
+        content = data.content.lower()
+
+        urls = URL_PATTERN.findall(data.content)
+        ip_addresses = IP_PATTERN.findall(data.content)
+
+        # Structured security-event metadata.
+        # getattr() keeps compatibility with the older AnalysisInput
+        # used by the existing detection tests.
+        metadata = getattr(data, "metadata", {}) or {}
+        event = metadata.get("event", {})
+
+        event_type = str(
+            event.get(
+                "event_type",
+                getattr(data, "event_type", ""),
+            )
+        ).lower()
+
+        attempts = event.get("attempts", 0)
+
+        try:
+            attempts = int(attempts)
+        except (TypeError, ValueError):
+            attempts = 0
+
+        return {
+            "content_length": len(data.content),
+
+            # Structured security-event indicators
+            "is_failed_login": event_type == "failed_login",
+            "failed_login_attempts": attempts,
+            "is_brute_force": (
+                event_type == "failed_login"
+                and attempts >= 5
+            ),
+            "is_port_scan": event_type == "port_scan",
+
+            # Extracted IOC values
+            "urls": urls,
+            "ip_addresses": ip_addresses,
+
+            # URL / phishing indicators
+            "contains_url": bool(urls),
+
+            "contains_ip_url": any(
+                re.search(
+                    r"https?://(?:\d{1,3}\.){3}\d{1,3}(?:[/:]|$)",
+                    url,
+                    re.IGNORECASE,
+                )
+                for url in urls
+            ),
+
+            "contains_url_shortener": any(
+                domain in content
+                for domain in (
+                    "bit.ly/",
+                    "tinyurl.com/",
+                    "t.co/",
+                    "goo.gl/",
+                    "is.gd/",
+                    "cutt.ly/",
+                )
+            ),
+
+            "contains_suspicious_tld": any(
+                tld in content
+                for tld in (
+                    ".tk/",
+                    ".top/",
+                    ".xyz/",
+                    ".click/",
+                    ".gq/",
+                    ".ml/",
+                )
+            ),
+
+            # Existing social-engineering indicators
+            "contains_suspicious_keyword": any(
+                keyword in content
+                for keyword in (
+                    "verify account",
+                    "urgent action",
+                    "suspicious login",
+                )
+            ),
+
+            "contains_urgency": any(
+                phrase in content
+                for phrase in (
+                    "urgent",
+                    "immediately",
+                    "act now",
+                    "right away",
+                    "within 24 hours",
+                    "limited time",
+                )
+            ),
+
+            "contains_threat_language": any(
+                phrase in content
+                for phrase in (
+                    "account will be suspended",
+                    "account has been suspended",
+                    "your account will be closed",
+                    "legal action",
+                    "police action",
+                    "you will lose access",
+                )
+            ),
+
+            "contains_reward_scam": any(
+                phrase in content
+                for phrase in (
+                    "you won",
+                    "you have won",
+                    "claim your prize",
+                    "free prize",
+                    "lottery winner",
+                    "reward",
+                )
+            ),
+
+            # Credential phishing
+            "contains_credential_request": any(
+                keyword in content
+                for keyword in (
+                    "password",
+                    "otp",
+                    "one time password",
+                    "one-time password",
+                    "login credential",
+                    "credentials",
+                    "passcode",
+                    "verification code",
+                )
+            ),
+
+            # Financial fraud
+            "contains_financial_request": any(
+                keyword in content
+                for keyword in (
+                    "transfer money",
+                    "send money",
+                    "money transfer",
+                    "upi account",
+                    "upi id",
+                    "bank transfer",
+                    "payment",
+                    "card number",
+                    "credit card",
+                    "debit card",
+                    "crypto payment",
+                    "cryptocurrency",
+                    "bitcoin payment",
+                )
+            ),
+
+            # Impersonation
+            "contains_impersonation": any(
+                phrase in content
+                for phrase in (
+                    "i am from your bank",
+                    "i'm from your bank",
+                    "i am from the bank",
+                    "i'm from the bank",
+                    "from your bank",
+                    "from the bank",
+                    "bank support",
+                    "bank representative",
+                    "customer support",
+                    "government official",
+                    "income tax department",
+                    "police department",
+                    "delivery service",
+                    "payment support",
+                )
+            ),
+        }
