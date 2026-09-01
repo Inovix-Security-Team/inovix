@@ -35,7 +35,7 @@ def test_analyze_response_contract():
     assert response.status_code == 200
 
     data = response.json()
-
+    assert data["status"] == "completed"
     expected_keys = {
         "status",
         "target",
