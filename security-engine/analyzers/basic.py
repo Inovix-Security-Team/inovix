@@ -1,3 +1,5 @@
+import re
+
 from security_engine.analyzers.base import Analyzer
 from security_engine.models import AnalysisInput
 
