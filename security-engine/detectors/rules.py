@@ -1,5 +1,5 @@
-from detectors.base import Detector
-from models import Finding
+from security_engine.detectors.base import Detector
+from security_engine.models import Finding
 
 
 class RuleBasedDetector(Detector):
