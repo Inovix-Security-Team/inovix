@@ -1,7 +1,7 @@
 from typing import Any
 
-from models import NormalizedEvent
-from utils.validation import validate_input
+from security_engine.models import NormalizedEvent
+from security_engine.utils.validation import validate_input
 
 
 def normalize_input(
