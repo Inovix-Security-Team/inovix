@@ -32,13 +32,31 @@ def test_empty_findings_score_zero():
     assert calculate_risk_score([]) == 0
 
 
-def test_multiple_findings_are_combined():
+def test_multiple_findings_are_correlated():
     findings = [
         make_finding("LOW"),
         make_finding("MEDIUM"),
     ]
 
-    assert calculate_risk_score(findings) == 70
+    assert calculate_risk_score(findings) == 100
+
+def test_multiple_independent_primary_findings_escalate_to_maximum():
+    findings = [
+        Finding(
+            rule_id="CREDENTIAL_REQUEST",
+            severity="HIGH",
+            reason="Sensitive credential request detected.",
+            indicator="credential_request",
+        ),
+        Finding(
+            rule_id="FINANCIAL_REQUEST",
+            severity="HIGH",
+            reason="Financial request detected.",
+            indicator="financial_request",
+        ),
+    ]
+
+    assert calculate_risk_score(findings) == 100
 
 
 def test_multiple_high_findings_are_capped_at_100():
