@@ -1,5 +1,3 @@
-from typing import Literal
-
 from pydantic import BaseModel, Field, field_validator
 
 
@@ -28,7 +26,7 @@ class FindingResponse(BaseModel):
 
 class ImpactResponse(BaseModel):
     level: str
-    reasons: list[str] = []
+    reasons: list[str] = Field(default_factory=list)
 
 
 class ResponseDecisionResponse(BaseModel):
@@ -47,9 +45,9 @@ class AnalyzeResponse(BaseModel):
     target: str
     risk_score: int = Field(..., ge=0, le=100)
     verdict: str
-findings: list[FindingResponse] = Field(default_factory=list)
-reasons: list[str] = Field(default_factory=list)
-indicators: list[str] = Field(default_factory=list)
+    findings: list[FindingResponse] = Field(default_factory=list)
+    reasons: list[str] = Field(default_factory=list)
+    indicators: list[str] = Field(default_factory=list)
     impact: ImpactResponse | None = None
     response: ResponseDecisionResponse | None = None
     verification: VerificationResponse | None = None
