@@ -75,9 +75,10 @@ def test_analyze_credential_request():
     assert response.status_code == 200
 
     data = response.json()
-
-    assert data["risk_score"] == 80
-    assert data["verdict"] == "MALICIOUS"
+    
+assert data["status"] == "completed"
+assert data["risk_score"] == 80
+assert data["verdict"] == "MALICIOUS"
 
     rule_ids = {
         finding["rule_id"]
