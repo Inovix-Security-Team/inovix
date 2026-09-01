@@ -349,3 +349,33 @@ def test_benign_message_has_no_advanced_findings(
     assert result.verdict == "SAFE"
     assert result.risk_score == 0
     assert result.findings == []
+
+def test_ip_based_url_finding_contains_value(
+    engine: SecurityEngine,
+) -> None:
+    result = engine.analyze(
+        "Visit http://203.0.113.10/login"
+    )
+
+    finding = next(
+        finding
+        for finding in result.findings
+        if finding.rule_id == "IP_BASED_URL"
+    )
+
+    assert finding.value == "203.0.113.10"
+
+def test_url_finding_contains_value(
+    engine: SecurityEngine,
+) -> None:
+    result = engine.analyze(
+        "Visit https://example.com/login"
+    )
+
+    finding = next(
+        finding
+        for finding in result.findings
+        if finding.rule_id == "URL_PRESENT"
+    )
+
+    assert finding.value == "https://example.com/login"
