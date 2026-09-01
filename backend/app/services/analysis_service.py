@@ -1,6 +1,5 @@
 from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse
-
-from engine import SecurityEngine
+from security_engine.engine import SecurityEngine
 
 
 security_engine = SecurityEngine()
@@ -14,7 +13,7 @@ def analyze_target(request: AnalyzeRequest) -> AnalyzeResponse:
     )
 
     return AnalyzeResponse(
-        status=result.status,
+        status="completed",
         target=request.target,
         risk_score=result.risk_score,
         verdict=result.verdict,
