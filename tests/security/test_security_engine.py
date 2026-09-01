@@ -32,7 +32,7 @@ def test_security_safe_sample(test_events):
     engine = get_security_engine()
     event = test_events.get("normal_event", {})
     if engine:
-        analysis = engine.analyze_event(event)
+        analysis = engine.analyze(event)
         assert analysis["risk_score"] < 30
     else:
         assert event.get("event_type") == "user_login"
