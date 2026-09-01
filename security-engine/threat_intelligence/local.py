@@ -1,9 +1,11 @@
-from models import Finding
+from dataclasses import replace
 
-from threat_intelligence.base import ThreatIntelligenceProvider
-
-
-class LocalThreatIntelligenceProvider(ThreatIntelligenceProvider):
+from security_engine.models import Finding
+from security_engine.threat_intelligence.base import (
+    ThreatIntelligenceProvider,
+)
+from security_engine.threat_intelligence.models import IOCStatus, IOCType
+from security_engine.threat_intelligence.store import LocalIOCStore
     """Deterministic local threat-intelligence provider.
 
     This provider intentionally uses no external services.
