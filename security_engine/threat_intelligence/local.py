@@ -9,6 +9,11 @@ from security_engine.threat_intelligence.models import (
     IOCType,
 )
 from security_engine.threat_intelligence.store import LocalIOCStore
+from models import Finding
+
+from threat_intelligence.base import ThreatIntelligenceProvider
+from threat_intelligence.models import IOCStatus, IOCType
+from threat_intelligence.store import LocalIOCStore
 
 class LocalThreatIntelligenceProvider(ThreatIntelligenceProvider):
     """Threat-intelligence provider backed by local IOC storage."""

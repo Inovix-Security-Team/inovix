@@ -10,6 +10,10 @@ from security_engine.threat_intelligence.models import (
     IOCType,
 )
 from security_engine.threat_intelligence.store import LocalIOCStore
+from threat_intelligence.base import ThreatIntelligenceProvider
+from threat_intelligence.local import LocalThreatIntelligenceProvider
+from threat_intelligence.models import IOC, IOCStatus, IOCType
+from threat_intelligence.store import LocalIOCStore
 
 __all__ = [
     "ThreatIntelligenceProvider",

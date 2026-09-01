@@ -2,7 +2,10 @@ import pytest
 
 from security_engine.engine import SecurityEngine
 from security_engine.exceptions import InvalidInputError
-from security_engine.models import (
+from security_engine.models import 
+from engine import SecurityEngine
+from exceptions import InvalidInputError
+from models import (
     Finding,
     ImpactResult,
     NormalizedEvent,
@@ -14,10 +17,23 @@ from security_engine.models import (
 from security_engine.utils.normalization import normalize_input
 from security_engine.utils.risk_scoring import calculate_risk_score
 from security_engine.utils.verdict import generate_verdict
+from utils.normalization import normalize_input
+from utils.risk_scoring import calculate_risk_score
+from utils.verdict import generate_verdict
+
 
 @pytest.fixture
 def engine() -> SecurityEngine:
     return SecurityEngine()
+from models import (
+    ImpactResult,
+    NormalizedEvent,
+    ResponseDecision,
+    RiskResult,
+    SecurityEvent,
+    VerificationResult,
+)
+
 
 def test_security_event_defaults() -> None:
     event = SecurityEvent(content="Hello Inovix")
@@ -247,7 +263,7 @@ def test_url_shortener_detection(engine: SecurityEngine) -> None:
     result = engine.analyze(
         "Open this link: https://bit.ly/login"
     )
-    
+
     assert "URL_SHORTENER" in [
         finding.rule_id for finding in result.findings
     ]
