@@ -1,9 +1,7 @@
-from typing import Any
-
-from .analyzers.basic import BasicAnalyzer
-from .detectors.rules import RuleBasedDetector
-from .exceptions import SecurityEngineError
-from .models import (
+from security_engine.analyzers.basic import BasicAnalyzer
+from security_engine.detectors.rules import RuleBasedDetector
+from security_engine.exceptions import SecurityEngineError
+from security_engine.models import (
     AnalysisResult,
     ImpactResult,
     ResponseDecision,
@@ -11,11 +9,13 @@ from .models import (
     SecurityResult,
     VerificationResult,
 )
-from .threat_intelligence import LocalThreatIntelligenceProvider
-from .utils.normalization import normalize_input
-from .utils.risk_scoring import calculate_risk_score
-from .utils.validation import validate_input
-from .utils.verdict import generate_verdict
+from security_engine.threat_intelligence import (
+    LocalThreatIntelligenceProvider,
+)
+from security_engine.utils.normalization import normalize_input
+from security_engine.utils.risk_scoring import calculate_risk_score
+from security_engine.utils.validation import validate_input
+from security_engine.utils.verdict import generate_verdict
 
 class SecurityEngine:
     """Core modular security detection pipeline."""
