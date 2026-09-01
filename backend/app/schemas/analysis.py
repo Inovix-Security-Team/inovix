@@ -47,9 +47,9 @@ class AnalyzeResponse(BaseModel):
     target: str
     risk_score: int = Field(..., ge=0, le=100)
     verdict: str
-    findings: list[FindingResponse] = []
-    reasons: list[str] = []
-    indicators: list[str] = []
+findings: list[FindingResponse] = Field(default_factory=list)
+reasons: list[str] = Field(default_factory=list)
+indicators: list[str] = Field(default_factory=list)
     impact: ImpactResponse | None = None
     response: ResponseDecisionResponse | None = None
     verification: VerificationResponse | None = None
