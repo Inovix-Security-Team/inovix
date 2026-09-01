@@ -243,3 +243,109 @@ def test_multiple_new_security_findings(
     assert "IMPERSONATION_LANGUAGE" in rule_ids
     assert "CREDENTIAL_REQUEST" in rule_ids
     assert "FINANCIAL_REQUEST" in rule_ids
+
+def test_ip_based_url_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Please login at http://192.168.1.10/login"
+    )
+
+    assert result.verdict == "MALICIOUS"
+    assert "IP_BASED_URL" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_url_shortener_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Open this link: https://bit.ly/login"
+    )
+
+    assert "URL_SHORTENER" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_suspicious_tld_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Visit https://secure-login.xyz/account"
+    )
+
+    assert "SUSPICIOUS_TLD" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_threat_language_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Your account will be suspended unless you act."
+    )
+
+    assert "THREAT_LANGUAGE" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_reward_scam_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Congratulations! You have won a prize."
+    )
+
+    assert "REWARD_SCAM" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_extended_credential_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Please provide your verification code."
+    )
+
+    assert result.verdict == "MALICIOUS"
+    assert "CREDENTIAL_REQUEST" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_extended_financial_detection(engine: SecurityEngine) -> None:
+    result = engine.analyze(
+        "Please make a cryptocurrency payment immediately."
+    )
+
+    assert result.verdict == "MALICIOUS"
+    assert "FINANCIAL_REQUEST" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
+def test_multiple_advanced_indicators_correlate(
+    engine: SecurityEngine,
+) -> None:
+    result = engine.analyze(
+        "I am from your bank. "
+        "Your account will be suspended. "
+        "Please send your password."
+    )
+
+    assert result.verdict == "MALICIOUS"
+    assert result.risk_score == 100
+
+    rule_ids = [
+        finding.rule_id
+        for finding in result.findings
+    ]
+
+    assert "IMPERSONATION_LANGUAGE" in rule_ids
+    assert "THREAT_LANGUAGE" in rule_ids
+    assert "CREDENTIAL_REQUEST" in rule_ids
+
+
+def test_benign_message_has_no_advanced_findings(
+    engine: SecurityEngine,
+) -> None:
+    result = engine.analyze(
+        "Hi team, the meeting is scheduled for tomorrow."
+    )
+
+    assert result.verdict == "SAFE"
+    assert result.risk_score == 0
+    assert result.findings == []
