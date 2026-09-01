@@ -15,6 +15,6 @@ def snapshot() -> dict:
         "net_out": net.bytes_sent,
         "hostname": socket.gethostname(),
         "os": platform.system(),
-        "uptime": int(time.time() - _STARTED),
+        "uptime": int(time.time() - psutil.boot_time()),
         "processes": len(psutil.pids()),
     }

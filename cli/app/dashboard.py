@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 import platform
-import random
 import socket
 import time
 from datetime import datetime
 
 import psutil
+from cli.services.event_service import EventService
 from textual.app import App, ComposeResult
 from textual.containers import Horizontal, Vertical
 from textual.reactive import reactive
@@ -208,8 +208,12 @@ class InovixDashboard(App):
         ("q", "quit", "Quit"),
     ]
 
-    threat_score = reactive(18)
+    threat_score = reactive(0)
     scan_running = reactive(False)
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.event_service = EventService()
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -235,7 +239,8 @@ class InovixDashboard(App):
                         "────────────────────────────────────\n"
                         f"HOSTNAME       : {socket.gethostname()}\n"
                         f"USER           : {self._get_user()}\n"
-                        f"OS             : {platform.system()} {platform.release()}\n"
+                        f"OS             : {platform.system()} "
+                        f"{platform.release()}\n"
                         f"ARCHITECTURE   : {platform.machine()}\n"
                         f"UPTIME         : {self._uptime()}\n"
                         "INOVIX MODE    : LOCAL + ONLINE INTELLIGENCE\n"
@@ -268,7 +273,7 @@ class InovixDashboard(App):
 
                 yield Static(
                     "THREAT SCORE\n\n"
-                    "[green]18[/green] /100\n"
+                    "[green]0[/green] /100\n"
                     "\n"
                     "[green]LOW RISK[/green]",
                     classes="metric",
@@ -278,11 +283,11 @@ class InovixDashboard(App):
                 yield Static(
                     "THREATS DETECTED\n\n"
                     "[critical]CRITICAL[/critical]   0\n"
-                    "[high]HIGH[/high]       1\n"
-                    "[medium]MEDIUM[/medium]     3\n"
-                    "[low]LOW[/low]        12\n"
+                    "[high]HIGH[/high]       0\n"
+                    "[medium]MEDIUM[/medium]     0\n"
+                    "[low]LOW[/low]        0\n"
                     "\n"
-                    "TOTAL: 16",
+                    "TOTAL: 0",
                     classes="metric",
                     id="threats",
                 )
@@ -316,7 +321,7 @@ class InovixDashboard(App):
                 yield Static(
                     "DISK USAGE\n\n"
                     "[green]--%[/green]\n\n"
-                    "System disk",
+                    "Monitoring",
                     classes="metric",
                     id="disk",
                 )
@@ -330,13 +335,12 @@ class InovixDashboard(App):
                 yield Static(
                     "LIVE SECURITY EVENTS\n"
                     "────────────────────────────────────\n"
-                    "TIME       LEVEL     EVENT\n"
+                    "TIME       LEVEL     RULE / EVENT\n"
                     "\n"
-                    "[green]--:--:--   INFO      System monitoring active[/green]\n"
-                    "[green]--:--:--   LOW       Endpoint initialized[/green]\n"
-                    "[cyan]--:--:--   INFO      Threat intelligence ready[/cyan]\n"
+                    "[green]--:--:--   INFO      "
+                    "Security monitoring ready[/green]\n"
                     "\n"
-                    "Waiting for security events...",
+                    "[green]●[/green] Waiting for security events...",
                     classes="panel",
                     id="events",
                 )
@@ -380,7 +384,8 @@ class InovixDashboard(App):
                     "Local Provider       : [green]ACTIVE[/green]\n"
                     "Offline Fallback     : [green]READY[/green]\n"
                     "External Feeds       : [cyan]ONLINE[/cyan]\n"
-                    "Feed Status          : [green]● SYNCHRONIZED[/green]",
+                    "Feed Status          : "
+                    "[green]● SYNCHRONIZED[/green]",
                     classes="panel",
                     id="intel",
                 )
@@ -389,13 +394,16 @@ class InovixDashboard(App):
                     "ENGINE PIPELINE STATUS\n"
                     "────────────────────────────────────\n"
                     "\n"
-                    "[green][INPUT] -> [VALIDATION] -> [NORMALIZATION][/green]\n"
+                    "[green][INPUT] -> [VALIDATION] -> "
+                    "[NORMALIZATION][/green]\n"
                     "    OK          OK               OK\n"
                     "\n"
-                    "[green][ANALYZER] -> [DETECTOR] -> [THREAT INTEL][/green]\n"
+                    "[green][ANALYZER] -> [DETECTOR] -> "
+                    "[THREAT INTEL][/green]\n"
                     "    OK           OK              READY\n"
                     "\n"
-                    "[green][RISK SCORE] -> [VERDICT] -> [IMPACT][/green]\n"
+                    "[green][RISK SCORE] -> [VERDICT] -> "
+                    "[IMPACT][/green]\n"
                     "      OK           OK           OK\n"
                     "\n"
                     "[green][RESPONSE] -> [VERIFICATION][/green]\n"
@@ -446,10 +454,22 @@ class InovixDashboard(App):
         self.update_network()
         self.update_events()
 
-        self.set_interval(2, self.update_system_metrics)
-        self.set_interval(3, self.update_processes)
-        self.set_interval(4, self.update_network)
-        self.set_interval(2, self.update_events)
+        self.set_interval(
+            2,
+            self.update_system_metrics,
+        )
+        self.set_interval(
+            3,
+            self.update_processes,
+        )
+        self.set_interval(
+            4,
+            self.update_network,
+        )
+        self.set_interval(
+            2,
+            self.update_events,
+        )
 
     # ========================================================
     # SYSTEM MONITOR
@@ -493,6 +513,7 @@ class InovixDashboard(App):
         ):
             try:
                 info = proc.info
+
                 processes.append(
                     (
                         info["pid"],
@@ -505,10 +526,17 @@ class InovixDashboard(App):
                         ),
                     )
                 )
-            except (psutil.NoSuchProcess, psutil.AccessDenied):
+
+            except (
+                psutil.NoSuchProcess,
+                psutil.AccessDenied,
+            ):
                 continue
 
-        processes.sort(key=lambda x: x[2], reverse=True)
+        processes.sort(
+            key=lambda item: item[2],
+            reverse=True,
+        )
 
         lines = [
             "TOP PROCESSES",
@@ -519,12 +547,16 @@ class InovixDashboard(App):
 
         for pid, name, cpu, memory in processes[:7]:
             name = name[:18]
+
             lines.append(
                 f"{pid:<9} {name:<20} "
                 f"{cpu:>5.1f}%   {memory:>7.1f} MB"
             )
 
-        self.query_one("#processes", Static).update("\n".join(lines))
+        self.query_one(
+            "#processes",
+            Static,
+        ).update("\n".join(lines))
 
     # ========================================================
     # NETWORK MONITOR
@@ -532,13 +564,19 @@ class InovixDashboard(App):
 
     def update_network(self) -> None:
         try:
-            connections = psutil.net_connections(kind="inet")
-        except psutil.AccessDenied:
+            connections = psutil.net_connections(
+                kind="inet"
+            )
+        except (
+            psutil.AccessDenied,
+            OSError,
+        ):
             connections = []
 
         established = [
-            c for c in connections
-            if c.status == "ESTABLISHED"
+            connection
+            for connection in connections
+            if connection.status == "ESTABLISHED"
         ]
 
         lines = [
@@ -550,107 +588,117 @@ class InovixDashboard(App):
             "",
         ]
 
-        for conn in established[:8]:
+        for connection in established[:8]:
             local = (
-                f"{conn.laddr.ip}:{conn.laddr.port}"
-                if conn.laddr
+                f"{connection.laddr.ip}:{connection.laddr.port}"
+                if connection.laddr
                 else "-"
             )
 
             remote = (
-                f"{conn.raddr.ip}:{conn.raddr.port}"
-                if conn.raddr
+                f"{connection.raddr.ip}:{connection.raddr.port}"
+                if connection.raddr
                 else "-"
             )
 
             lines.append(
-                f"{local:<20} {remote:<22} "
-                f"[green]ESTABLISHED[/green]"
+                f"{local:<20} "
+                f"{remote:<22} "
+                "[green]ESTABLISHED[/green]"
             )
 
         if not established:
-            lines.append("No established connections detected.")
+            lines.append(
+                "No established connections detected."
+            )
 
-        self.query_one("#network", Static).update(
-            "\n".join(lines)
-        )
+        self.query_one(
+            "#network",
+            Static,
+        ).update("\n".join(lines))
 
     # ========================================================
     # SECURITY EVENT STREAM
     # ========================================================
 
     def update_events(self) -> None:
-        now = datetime.now().strftime("%H:%M:%S")
+        """Refresh the security event panel from EventService state."""
 
-        events = [
-            (
-                "INFO",
-                "System telemetry updated",
-                "System",
-            ),
-            (
-                "LOW",
-                "Endpoint monitoring active",
-                "Engine",
-            ),
-            (
-                "INFO",
-                "Threat intelligence synchronized",
-                "Intel",
-            ),
-            (
-                "LOW",
-                "Network connection observed",
-                "Network",
-            ),
-            (
-                "INFO",
-                "Security pipeline healthy",
-                "Engine",
-            ),
-        ]
-
-        level, message, source = random.choice(events)
-
-        level_markup = {
-            "INFO": "[cyan]INFO[/cyan]",
-            "LOW": "[green]LOW[/green]",
-            "MEDIUM": "[yellow]MEDIUM[/yellow]",
-            "HIGH": "[dark_orange]HIGH[/dark_orange]",
-            "CRITICAL": "[red]CRITICAL[/red]",
-        }.get(level, level)
-
-        widget = self.query_one("#events", Static)
-
-        existing = (
-            "LIVE SECURITY EVENTS\n"
-            "────────────────────────────────────\n"
-            "TIME       LEVEL     EVENT\n"
+        state = self.event_service.state
+        widget = self.query_one(
+            "#events",
+            Static,
         )
 
-        rows = [
-            (
-                now,
-                level_markup,
-                message,
-                source,
-            )
+        lines = [
+            "LIVE SECURITY EVENTS",
+            "────────────────────────────────────────────────────────",
+            "TIME       LEVEL     RULE / EVENT",
+            "",
         ]
 
-        for row in rows:
-            existing += (
-                f"{row[0]}   {row[1]:<15} "
-                f"{row[2]} [{row[3]}]\n"
+        if not state.recent_events:
+            lines.extend(
+                [
+                    (
+                        "[green]--:--:--   INFO      "
+                        "Security monitoring ready[/green]"
+                    ),
+                    "",
+                    (
+                        "[green]●[/green] "
+                        "Waiting for security events..."
+                    ),
+                    (
+                        f"[cyan]●[/cyan] Intelligence: "
+                        f"{state.intelligence}"
+                    ),
+                ]
             )
 
-        existing += (
-            "\n"
-            "[green]●[/green] Continuous monitoring active\n"
-            "[green]●[/green] No critical threats detected\n"
-            "[cyan]●[/cyan] Local + online intelligence ready"
-        )
+        else:
+            level_markup = {
+                "LOW": "[green]LOW[/green]",
+                "MEDIUM": "[yellow]MEDIUM[/yellow]",
+                "HIGH": "[dark_orange]HIGH[/dark_orange]",
+                "CRITICAL": "[red]CRITICAL[/red]",
+            }
 
-        widget.update(existing)
+            for event in state.recent_events:
+                level = level_markup.get(
+                    event.severity,
+                    event.severity,
+                )
+
+                lines.append(
+                    f"{event.timestamp}   "
+                    f"{level}   "
+                    f"{event.rule}"
+                )
+
+                lines.append(
+                    f"           {event.message}"
+                )
+
+            lines.extend(
+                [
+                    "",
+                    (
+                        f"[cyan]●[/cyan] Events analyzed: "
+                        f"{state.events_analyzed}"
+                    ),
+                    (
+                        f"[cyan]●[/cyan] Findings: "
+                        f"{state.findings}"
+                    ),
+                    (
+                        f"[green]●[/green] Intelligence: "
+                        f"{state.intelligence}"
+                    ),
+                ]
+            )
+
+        widget.update("\n".join(lines))
 
     # ========================================================
     # ACTIONS
@@ -661,12 +709,16 @@ class InovixDashboard(App):
 
     def action_scan(self) -> None:
         self.scan_running = True
+
         self.notify(
             "Quick scan started",
             severity="information",
         )
 
-        self.query_one("#scan", Static).update(
+        self.query_one(
+            "#scan",
+            Static,
+        ).update(
             "QUICK SCAN\n"
             "────────────────────────────────────\n"
             "\n"
@@ -680,19 +732,26 @@ class InovixDashboard(App):
             "Analyzing endpoint..."
         )
 
-        self.set_timer(5, self.finish_scan)
+        self.set_timer(
+            5,
+            self.finish_scan,
+        )
 
     def finish_scan(self) -> None:
         self.scan_running = False
 
-        self.query_one("#scan", Static).update(
+        self.query_one(
+            "#scan",
+            Static,
+        ).update(
             "QUICK SCAN\n"
             "────────────────────────────────────\n"
             "\n"
             "[green]SCAN COMPLETE[/green]\n"
             "\n"
             "Type       : Quick Scan\n"
-            f"Time       : {datetime.now().strftime('%H:%M:%S')}\n"
+            f"Time       : "
+            f"{datetime.now().strftime('%H:%M:%S')}\n"
             "Duration   : 5.0 sec\n"
             "Files      : 1,247\n"
             "Threats    : 0\n"
@@ -708,33 +767,53 @@ class InovixDashboard(App):
         )
 
     def action_threats(self) -> None:
-        self.notify("Threat intelligence view")
+        self.notify(
+            "Threat intelligence view"
+        )
 
     def action_network(self) -> None:
-        self.notify("Network activity view")
+        self.notify(
+            "Network activity view"
+        )
 
     def action_processes(self) -> None:
-        self.notify("Process activity view")
+        self.notify(
+            "Process activity view"
+        )
 
     def action_intel(self) -> None:
-        self.notify("Threat intelligence online")
+        self.notify(
+            "Threat intelligence online"
+        )
 
     def action_events(self) -> None:
-        self.notify("Live event stream active")
+        self.notify(
+            "Live event stream active"
+        )
 
     def action_refresh(self) -> None:
         self.update_system_metrics()
         self.update_processes()
         self.update_network()
-        self.notify("Dashboard refreshed")
+        self.update_events()
+
+        self.notify(
+            "Dashboard refreshed"
+        )
 
     # ========================================================
     # HELPERS
     # ========================================================
 
     @staticmethod
-    def _bar(value: float, width: int = 18) -> str:
-        filled = int((value / 100) * width)
+    def _bar(
+        value: float,
+        width: int = 18,
+    ) -> str:
+        filled = int(
+            (value / 100) * width
+        )
+
         return (
             "[green]"
             + "█" * filled
@@ -746,20 +825,38 @@ class InovixDashboard(App):
     def _get_user() -> str:
         try:
             import getpass
+
             return getpass.getuser()
+
         except Exception:
             return "unknown"
 
     @staticmethod
     def _uptime() -> str:
         try:
-            uptime = time.time() - psutil.boot_time()
+            uptime = (
+                time.time()
+                - psutil.boot_time()
+            )
 
-            days = int(uptime // 86400)
-            hours = int((uptime % 86400) // 3600)
-            minutes = int((uptime % 3600) // 60)
+            days = int(
+                uptime // 86400
+            )
 
-            return f"{days}d {hours:02d}:{minutes:02d}"
+            hours = int(
+                (uptime % 86400) // 3600
+            )
+
+            minutes = int(
+                (uptime % 3600) // 60
+            )
+
+            return (
+                f"{days}d "
+                f"{hours:02d}:"
+                f"{minutes:02d}"
+            )
+
         except Exception:
             return "unknown"
 
