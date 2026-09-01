@@ -24,11 +24,11 @@ def test_health_endpoint():
     }
 
 
-def test_analyze_safe():
+def test_analyze_response_contract():
     response = client.post(
         "/api/v1/analyze",
         json={
-            "target": "User login successful."
+            "target": "192.168.1.1"
         },
     )
 
@@ -36,11 +36,33 @@ def test_analyze_safe():
 
     data = response.json()
 
-    assert data["target"] == "User login successful."
-    assert data["risk_score"] == 0
-    assert data["verdict"] == "SAFE"
-    assert data["findings"] == []
+    expected_keys = {
+        "status",
+        "target",
+        "risk_score",
+        "verdict",
+        "findings",
+        "reasons",
+        "indicators",
+        "impact",
+        "response",
+        "verification",
+    }
 
+    assert set(data.keys()) == expected_keys
+
+    assert data["status"] == "completed"
+    assert isinstance(data["status"], str)
+
+    assert isinstance(data["target"], str)
+
+    assert isinstance(data["risk_score"], int)
+    assert 0 <= data["risk_score"] <= 100
+
+    assert isinstance(data["verdict"], str)
+    assert isinstance(data["findings"], list)
+    assert isinstance(data["reasons"], list)
+    assert isinstance(data["indicators"], list)
 
 def test_analyze_credential_request():
     response = client.post(
