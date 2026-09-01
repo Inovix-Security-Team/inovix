@@ -1,7 +1,6 @@
 from typing import Any
 
-from exceptions import InvalidInputError
-
+from security_engine.exceptions import InvalidInputError
 
 def validate_input(data: Any) -> None:
     """Validate raw input before analysis."""
