@@ -20,19 +20,18 @@ class FindingRepository:
             VALUES (?, ?, ?, ?, ?)
         """
 
-        with self.conn:
-            cursor = self.conn.execute(
-                query,
-                (
-                    finding.event_id,
-                    finding.rule_id,
-                    finding.severity,
-                    finding.reason,
-                    finding.indicator,
-                ),
-            )
+        cursor = self.conn.execute(
+            query,
+            (
+                finding.event_id,
+                finding.rule_id,
+                finding.severity,
+                finding.reason,
+                finding.indicator,
+            ),
+        )
 
-            finding.id = cursor.lastrowid
+        finding.id = cursor.lastrowid
 
         return finding
 

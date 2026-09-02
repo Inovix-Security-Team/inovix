@@ -28,18 +28,17 @@ class EventRepository:
             else event.metadata
         )
 
-        with self.conn:
-            self.conn.execute(
-                query,
-                (
-                    event.id,
-                    event.timestamp,
-                    event.event_type,
-                    event.source,
-                    event.content_hash,
-                    metadata_str,
-                ),
-            )
+        self.conn.execute(
+            query,
+            (
+                event.id,
+                event.timestamp,
+                event.event_type,
+                event.source,
+                event.content_hash,
+                metadata_str,
+            ),
+        )
 
         return self.get_event(event.id)
 
