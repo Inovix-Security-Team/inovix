@@ -1,4 +1,4 @@
-from models import Finding
+from security_engine.models import Finding
 
 from threat_intelligence import (
     LocalThreatIntelligenceProvider,
