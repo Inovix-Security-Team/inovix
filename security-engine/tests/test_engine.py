@@ -1,6 +1,6 @@
 import pytest
 
-from engine import SecurityEngine
+from security_engine.engine import SecurityEngine
 from exceptions import InvalidInputError
 from models import (
     Finding,
