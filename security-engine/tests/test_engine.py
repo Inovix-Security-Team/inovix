@@ -11,7 +11,7 @@ from models import (
     SecurityEvent,
     VerificationResult,
 )
-from utils.normalization import normalize_input
+from security_engine.utils.normalization import normalize_input
 from utils.risk_scoring import calculate_risk_score
 from utils.verdict import generate_verdict
 
