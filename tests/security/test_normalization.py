@@ -1,5 +1,4 @@
-from utils.normalization import normalize_input
-
+from security_engine.utils.normalization import normalize_input
 
 def test_normalization_structure():
     normalized = normalize_input(

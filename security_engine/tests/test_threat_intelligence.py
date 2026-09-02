@@ -1,6 +1,6 @@
-from models import Finding
+from security_engine.models import Finding
 
-from threat_intelligence import (
+from security_engine.threat_intelligence import (
     LocalThreatIntelligenceProvider,
     ThreatIntelligenceProvider,
 )
@@ -31,7 +31,7 @@ def test_local_provider_preserves_finding() -> None:
 
 
 def test_threat_intelligence_is_used_by_engine() -> None:
-    from engine import SecurityEngine
+    from security_engine.engine import SecurityEngine
 
     engine = SecurityEngine()
 
@@ -47,13 +47,13 @@ def test_threat_intelligence_is_used_by_engine() -> None:
     assert result.findings[0].rule_id == "CREDENTIAL_REQUEST"
 
 def test_malicious_local_ioc_enriches_finding() -> None:
-    from threat_intelligence import (
-        IOC,
-        IOCStatus,
-        IOCType,
-        LocalIOCStore,
-        LocalThreatIntelligenceProvider,
-    )
+    from security_engine.threat_intelligence import (
+    IOC,
+    IOCStatus,
+    IOCType,
+    LocalIOCStore,
+    LocalThreatIntelligenceProvider,
+)
 
     store = LocalIOCStore()
 
@@ -84,7 +84,7 @@ def test_malicious_local_ioc_enriches_finding() -> None:
     assert "malicious" in enriched.reason.lower()
 
 def test_unknown_local_ioc_preserves_finding() -> None:
-    from threat_intelligence import (
+    from security_engine.threat_intelligence import (
         LocalIOCStore,
         LocalThreatIntelligenceProvider,
     )

@@ -1,5 +1,5 @@
-from analyzers.basic import BasicAnalyzer
-from detectors.rules import RuleBasedDetector
+from security_engine.analyzers.basic import BasicAnalyzer
+from security_engine.detectors.rules import RuleBasedDetector
 
 
 def analyze_text(text: str) -> list:

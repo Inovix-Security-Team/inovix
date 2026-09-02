@@ -1,7 +1,7 @@
 import pytest
 
-from exceptions import InvalidInputError
-from utils.validation import validate_input
+from security_engine.exceptions import InvalidInputError
+from security_engine.utils.validation import validate_input
 
 
 @pytest.mark.parametrize(

@@ -1,7 +1,11 @@
 from datetime import datetime, timedelta
 
-from threat_intelligence.models import IOC, IOCStatus, IOCType
-from threat_intelligence.store import LocalIOCStore
+from security_engine.threat_intelligence.models import (
+    IOC,
+    IOCStatus,
+    IOCType,
+)
+from security_engine.threat_intelligence.store import LocalIOCStore
 
 
 def test_add_and_lookup_ioc() -> None:
