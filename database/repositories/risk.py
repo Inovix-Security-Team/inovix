@@ -26,16 +26,15 @@ class RiskRepository:
                 verdict = excluded.verdict
         """
 
-        with self.conn:
-            self.conn.execute(
-                query,
-                (
-                    risk.event_id,
-                    risk.score,
-                    risk.risk_level,
-                    risk.verdict,
-                ),
-            )
+        self.conn.execute(
+            query,
+            (
+                risk.event_id,
+                risk.score,
+                risk.risk_level,
+                risk.verdict,
+            ),
+        )
 
         saved = self.get_risk_for_event(risk.event_id)
 
