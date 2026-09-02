@@ -31,7 +31,7 @@ def test_local_provider_preserves_finding() -> None:
 
 
 def test_threat_intelligence_is_used_by_engine() -> None:
-    from engine import SecurityEngine
+    from security_engine.engine import SecurityEngine
 
     engine = SecurityEngine()
 
