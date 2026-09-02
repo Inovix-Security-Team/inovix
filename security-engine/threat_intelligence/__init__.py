@@ -11,7 +11,6 @@ from security_engine.threat_intelligence.models import (
 )
 from security_engine.threat_intelligence.store import LocalIOCStore
 
-
 __all__ = [
     "ThreatIntelligenceProvider",
     "LocalThreatIntelligenceProvider",
