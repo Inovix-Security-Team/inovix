@@ -1,6 +1,6 @@
 from security_engine.models import Finding
 
-from threat_intelligence import (
+from security_engine.threat_intelligence import (
     LocalThreatIntelligenceProvider,
     ThreatIntelligenceProvider,
 )
