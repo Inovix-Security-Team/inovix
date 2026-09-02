@@ -24,13 +24,15 @@ class Finding:
     severity: str
     reason: str
     indicator: str
+    value: str | None = None
 
-    def to_dict(self) -> dict[str, str]:
+    def to_dict(self) -> dict[str, str | None]:
         return {
             "rule_id": self.rule_id,
             "severity": self.severity,
             "reason": self.reason,
             "indicator": self.indicator,
+            "value": self.value,
         }
 
 

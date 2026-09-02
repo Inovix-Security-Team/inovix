@@ -18,10 +18,13 @@ def validate_input(data: Any) -> None:
         return
 
     if isinstance(data, dict):
-        # Structured telemetry events do not require a "content" field.
-        # They are converted into analyzable text by the engine.
         if not data:
             raise InvalidInputError("Structured event cannot be empty.")
+
+        if "event_type" not in data:
+            raise InvalidInputError(
+                "Structured event must contain an event_type."
+            )
 
         return
 

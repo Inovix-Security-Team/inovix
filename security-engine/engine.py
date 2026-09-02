@@ -3,6 +3,7 @@ from typing import Any
 from analyzers.basic import BasicAnalyzer
 from detectors.rules import RuleBasedDetector
 from exceptions import SecurityEngineError
+from threat_intelligence.local import LocalThreatIntelligenceProvider
 from models import (
     AnalysisResult,
     Finding,
@@ -24,6 +25,7 @@ class SecurityEngine:
     def __init__(self) -> None:
         self.analyzer = BasicAnalyzer()
         self.detector = RuleBasedDetector()
+        self.threat_intelligence = LocalThreatIntelligenceProvider()
 
     def _unknown_result(
         self,
@@ -317,80 +319,80 @@ class SecurityEngine:
                 "No security telemetry was provided."
             )
 
-        validate_input(content)
+        try:
+            validate_input(content)
 
-        if isinstance(content, dict):
-            event = content
+            if isinstance(content, dict):
+                event = content
 
-            # Handle explicitly structured security telemetry first.
-            structured_result = self._analyze_structured_event(event)
+                # Handle explicitly structured security telemetry first.
+                structured_result = self._analyze_structured_event(event)
 
-            if structured_result is not None:
-                return structured_result
+                if structured_result is not None:
+                    return structured_result
 
-            event_type_from_event = event.get(
-                "event_type",
-                event_type,
-            )
-
-            source_from_event = event.get(
-                "source_ip",
-                source,
-            )
-
-            if not isinstance(event_type_from_event, str):
-                event_type_from_event = event_type
-
-            if not isinstance(source_from_event, str):
-                source_from_event = source
-
-            event_metadata = {
-                key: value
-                for key, value in event.items()
-                if key not in {
+                event_type_from_event = event.get(
                     "event_type",
-                    "source_ip",
-                    "content",
-                }
-            }
-
-            if metadata:
-                event_metadata.update(metadata)
-
-            content_parts: list[str] = []
-
-            event_content = event.get("content")
-
-            if (
-                isinstance(event_content, str)
-                and event_content.strip()
-            ):
-                content_parts.append(event_content)
-
-            if event_type_from_event:
-                content_parts.append(
-                    f"event_type={event_type_from_event}"
+                    event_type,
                 )
 
-            for key, value in event.items():
-                if key in {
-                    "event_type",
+                source_from_event = event.get(
                     "source_ip",
-                    "content",
-                }:
-                    continue
+                    source,
+                )
 
-                if value is not None:
+                if not isinstance(event_type_from_event, str):
+                    event_type_from_event = event_type
+
+                if not isinstance(source_from_event, str):
+                    source_from_event = source
+
+                event_metadata = {
+                    key: value
+                    for key, value in event.items()
+                    if key not in {
+                        "event_type",
+                        "source_ip",
+                        "content",
+                    }
+                }
+
+                if metadata:
+                    event_metadata.update(metadata)
+
+                content_parts: list[str] = []
+
+                event_content = event.get("content")
+
+                if (
+                    isinstance(event_content, str)
+                    and event_content.strip()
+                ):
+                    content_parts.append(event_content)
+
+                if event_type_from_event:
                     content_parts.append(
-                        f"{key}={value}"
+                        f"event_type={event_type_from_event}"
                     )
 
-            content = " ".join(content_parts)
-            source = source_from_event
-            event_type = event_type_from_event
-            metadata = event_metadata
+                for key, value in event.items():
+                    if key in {
+                        "event_type",
+                        "source_ip",
+                        "content",
+                    }:
+                        continue
 
-        try:
+                    if value is not None:
+                        content_parts.append(
+                            f"{key}={value}"
+                        )
+
+                content = " ".join(content_parts)
+                source = source_from_event
+                event_type = event_type_from_event
+                metadata = event_metadata
+
             normalized = normalize_input(
                 content,
                 source=source,
