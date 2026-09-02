@@ -1,0 +1,45 @@
+From: "Microsoft Security" <security@example.com>
+To: victim@example.org
+Cc: admin@example.org
+Reply-To: attacker@evil.example
+Return-Path: <bounce@evil.example>
+Subject: Urgent Account Verification
+Date: Tue, 1 Sep 2026 10:30:00 +0000
+Message-ID: <suspicious-001@example.com>
+Received: from mail.example.com (mail.example.com [192.0.2.10]) by mx.example.org with ESMTP; Tue, 1 Sep 2026 10:29:58 +0000
+Received: from unknown.example.net (unknown.example.net [198.51.100.20]) by mail.example.com with ESMTP; Tue, 1 Sep 2026 10:29:50 +0000
+Authentication-Results: mx.example.org; spf=fail smtp.mailfrom=evil.example
+DKIM-Signature: v=1; a=rsa-sha256; d=evil.example; s=mail;
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="boundary123"
+
+--boundary123
+Content-Type: multipart/alternative; boundary="alt456"
+
+--alt456
+Content-Type: text/plain; charset="utf-8"
+
+Your account requires immediate verification.
+
+Click the link below to verify your account.
+
+--alt456
+Content-Type: text/html; charset="utf-8"
+
+<html>
+<body>
+<p>Your account requires <b>immediate verification</b>.</p>
+<a href="https://evil.example/login">Verify Account</a>
+</body>
+</html>
+
+--alt456--
+
+--boundary123
+Content-Type: application/pdf
+Content-Disposition: attachment; filename="invoice.pdf"
+Content-Transfer-Encoding: base64
+
+JVBERi0xLjQKJUVPRgo=
+
+--boundary123--
