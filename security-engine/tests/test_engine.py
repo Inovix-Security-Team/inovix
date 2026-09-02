@@ -1,7 +1,7 @@
 import pytest
 
 from security_engine.engine import SecurityEngine
-from exceptions import InvalidInputError
+from security_engine.exceptions import InvalidInputError
 from models import (
     Finding,
     ImpactResult,
