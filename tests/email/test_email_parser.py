@@ -1,19 +1,11 @@
 from pathlib import Path
-import sys
 
 import pytest
 
 
-EMAIL_SECURITY_DIR = (
-    Path(__file__).resolve().parents[2] / "email-security"
-)
-
-if str(EMAIL_SECURITY_DIR) not in sys.path:
-    sys.path.insert(0, str(EMAIL_SECURITY_DIR))
-
-from gateway.ingestion import EmailIngestion
-from email_models.email_models import AttachmentMetadata, EmailMessageData
-from email_parser.email_parser import EmailParser
+from email_security.gateway.ingestion import EmailIngestion
+from email_security.email_models.email_models import AttachmentMetadata, EmailMessageData
+from email_security.email_parser.email_parser import EmailParser
 
 
 FIXTURE = Path(__file__).parent / "fixtures" / "suspicious_email.eml"
@@ -206,3 +198,15 @@ Gateway body
 def test_invalid_input_type_is_rejected() -> None:
     with pytest.raises(TypeError):
         EmailParser().parse_raw(12345)  # type: ignore[arg-type]
+
+def test_non_eml_file_is_rejected(tmp_path) -> None:
+    file_path = tmp_path / "email.txt"
+    file_path.write_text(
+        "From: sender@example.com\n"
+        "To: recipient@example.com\n"
+        "Subject: Test\n\n"
+        "Test body"
+    )
+
+    with pytest.raises(ValueError, match=r"\.eml"):
+        EmailParser().parse_file(file_path)

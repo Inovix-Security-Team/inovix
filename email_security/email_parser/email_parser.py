@@ -7,7 +7,7 @@ from email.parser import BytesParser, Parser
 from email.utils import getaddresses
 from pathlib import Path
 
-from email_models.email_models import AttachmentMetadata, EmailMessageData
+from email_security.email_models.email_models import AttachmentMetadata, EmailMessageData
 
 
 class EmailParser:
@@ -38,6 +38,10 @@ class EmailParser:
         """Parse an .eml file."""
 
         email_path = Path(path)
+
+        if email_path.suffix.lower() != ".eml":
+            raise ValueError("Email file must have a .eml extension")
+
 
         with email_path.open("rb") as email_file:
             message = BytesParser(policy=policy.default).parse(email_file)

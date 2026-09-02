@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from email_models.email_models import EmailMessageData
-from email_parser.email_parser import EmailParser
+from email_security.email_models.email_models import EmailMessageData
+from email_security.email_parser.email_parser import EmailParser
 
 
 class EmailIngestion:
