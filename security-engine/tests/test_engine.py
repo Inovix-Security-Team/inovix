@@ -2,15 +2,7 @@ import pytest
 
 from security_engine.engine import SecurityEngine
 from security_engine.exceptions import InvalidInputError
-from models import (
-    Finding,
-    ImpactResult,
-    NormalizedEvent,
-    ResponseDecision,
-    RiskResult,
-    SecurityEvent,
-    VerificationResult,
-)
+
 from security_engine.utils.normalization import normalize_input
 from utils.risk_scoring import calculate_risk_score
 from utils.verdict import generate_verdict
