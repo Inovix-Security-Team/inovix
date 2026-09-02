@@ -1,10 +1,11 @@
 from dataclasses import replace
 
 from security_engine.models import Finding
-from security_engine.threat_intelligence.base import ThreatIntelligenceProvider
+from security_engine.threat_intelligence.base import (
+    ThreatIntelligenceProvider,
+)
 from security_engine.threat_intelligence.models import IOCStatus, IOCType
 from security_engine.threat_intelligence.store import LocalIOCStore
-
 
 class LocalThreatIntelligenceProvider(ThreatIntelligenceProvider):
     """Threat-intelligence provider backed by local IOC storage."""
