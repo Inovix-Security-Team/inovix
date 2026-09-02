@@ -12,16 +12,6 @@ from security_engine.utils.verdict import generate_verdict
 def engine() -> SecurityEngine:
     return SecurityEngine()
 
-from models import (
-    ImpactResult,
-    NormalizedEvent,
-    ResponseDecision,
-    RiskResult,
-    SecurityEvent,
-    VerificationResult,
-)
-
-
 def test_security_event_defaults() -> None:
     event = SecurityEvent(content="Hello Inovix")
 
