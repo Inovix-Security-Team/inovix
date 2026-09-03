@@ -11,6 +11,7 @@ from security_engine.models import (
     SecurityEvent,
     VerificationResult,
 )
+
 from security_engine.utils.normalization import normalize_input
 from security_engine.utils.risk_scoring import calculate_risk_score
 from security_engine.utils.verdict import generate_verdict
@@ -19,17 +20,43 @@ from security_engine.utils.verdict import generate_verdict
 @pytest.fixture
 def engine() -> SecurityEngine:
     return SecurityEngine()
+@pytest.fixture
+def normalized_event() -> NormalizedEvent:
+    return NormalizedEvent(
+        content="Hello Inovix",
+        source="local-test",
+        event_type="text",
+    )
+@pytest.fixture
+def finding() -> Finding:
+    return Finding(
+        rule_id="TEST_RULE",
+        severity="HIGH",
+        reason="Test security finding.",
+        indicator="test_indicator",
+    )
+@pytest.fixture
+def risk_result() -> RiskResult:
+    return RiskResult(
+        score=70,
+        level="SUSPICIOUS",
+        reasons=["Suspicious activity detected."],
+    )
+@pytest.fixture
+def impact_result() -> ImpactResult:
+    return ImpactResult()
 
 @pytest.fixture
-from security_engine.models import (
-    Finding,
-    ImpactResult,
-    NormalizedEvent,
-    ResponseDecision,
-    RiskResult,
+def response_decision() -> ResponseDecision:
+    return ResponseDecision()
+
+@pytest.fixture
+def verification_result() -> VerificationResult:
+    return VerificationResult()
+
     SecurityEvent,
     VerificationResult,
-)
+
 
 
 def test_security_event_defaults() -> None:
