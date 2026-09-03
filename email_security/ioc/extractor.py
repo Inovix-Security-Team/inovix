@@ -271,18 +271,4 @@ def _build_context(
     context_end = min(len(text), end + radius)
 
     return text[context_start:context_end].strip()
-def _build_context(
-    text: str,
-    start: int,
-    end: int,
-    radius: int = 80,
-) -> str:
-    """Return a bounded context window around an extracted IOC."""
-
-    context_start = max(0, start - radius)
-    context_end = min(len(text), end + radius)
-
-    return text[context_start:context_end].strip()
-
-
 

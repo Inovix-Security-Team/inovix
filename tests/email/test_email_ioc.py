@@ -353,3 +353,47 @@ def test_forensic_evidence_is_mapped_with_provenance():
         in occurrence.context
         for occurrence in email_ioc.occurrences
     )
+
+
+def test_extracts_common_ipv6_forms():
+    message = EmailMessageData(
+        text_body=(
+            "IPv6 addresses: "
+            "2001:db8::10 "
+            "2001:db8:85a3::8a2e:370:7334 "
+            "::1 "
+            "fe80::1"
+        ),
+    )
+
+    result = EmailIOCExtractor().extract(message)
+
+    assert _ioc(result, "2001:db8::10", IOCType.IP)
+    assert _ioc(
+        result,
+        "2001:db8:85a3::8a2e:370:7334",
+        IOCType.IP,
+    )
+    assert _ioc(result, "::1", IOCType.IP)
+    assert _ioc(result, "fe80::1", IOCType.IP)
+
+
+def test_url_normalization_preserves_case_sensitive_path():
+    message = EmailMessageData(
+        text_body=(
+            "https://example.com/Login "
+            "HTTPS://EXAMPLE.COM/Login"
+        ),
+    )
+
+    result = EmailIOCExtractor().extract(message)
+
+    url = _ioc(
+        result,
+        "https://example.com/Login",
+        IOCType.URL,
+    )
+
+    assert len(url.occurrences) == 2
+    assert url.occurrences[0].raw_value == "https://example.com/Login"
+    assert url.occurrences[1].raw_value == "HTTPS://EXAMPLE.COM/Login"

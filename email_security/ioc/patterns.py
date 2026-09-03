@@ -1,5 +1,6 @@
 import ipaddress
 import re
+from urllib.parse import urlsplit, urlunsplit
 
 
 URL_PATTERN = re.compile(
@@ -35,7 +36,7 @@ IPV4_PATTERN = re.compile(
 IPV6_PATTERN = re.compile(
     r"(?<![\w:])"
     r"(?:"
-    r"(?:[0-9A-Fa-f]{1,4}:){2,7}[0-9A-Fa-f]{1,4}"
+    r"(?:[0-9A-Fa-f]{1,4}:){7}[0-9A-Fa-f]{1,4}"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,7}:"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,6}:[0-9A-Fa-f]{1,4}"
     r"|(?:[0-9A-Fa-f]{1,4}:){1,5}(?::[0-9A-Fa-f]{1,4}){1,2}"
@@ -79,9 +80,52 @@ def normalize_domain(value: str) -> str:
 
 
 def normalize_url(value: str) -> str:
-    """Normalize a URL without performing network access."""
+    """Normalize URL syntax without changing case-sensitive components."""
 
-    return value.strip().rstrip(".,;:!?)]}>").lower()
+    value = value.strip().rstrip(".,;:!?)]}>")
+
+    try:
+        parsed = urlsplit(value)
+
+        if parsed.scheme.lower() not in {"http", "https"}:
+            return value
+
+        hostname = parsed.hostname
+        if hostname is None:
+            return value
+
+        userinfo = ""
+        if parsed.username is not None:
+            userinfo = parsed.username
+            if parsed.password is not None:
+                userinfo += f":{parsed.password}"
+            userinfo += "@"
+
+        host = hostname.lower()
+
+        if ":" in host and not host.startswith("["):
+            host = f"[{host}]"
+
+        port = ""
+        try:
+            if parsed.port is not None:
+                port = f":{parsed.port}"
+        except ValueError:
+            return value
+
+        netloc = f"{userinfo}{host}{port}"
+
+        return urlunsplit(
+            (
+                parsed.scheme.lower(),
+                netloc,
+                parsed.path,
+                parsed.query,
+                parsed.fragment,
+            )
+        )
+    except ValueError:
+        return value
 
 
 def normalize_email(value: str) -> str:
