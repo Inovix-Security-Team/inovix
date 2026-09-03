@@ -253,6 +253,11 @@ def test_url_shortener_detection(engine: SecurityEngine) -> None:
     ]
 
 
+    assert "URL_SHORTENER" in [
+        finding.rule_id for finding in result.findings
+    ]
+
+
 def test_suspicious_tld_detection(engine: SecurityEngine) -> None:
     result = engine.analyze(
         "Visit https://secure-login.xyz/account"
