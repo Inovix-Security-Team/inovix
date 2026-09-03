@@ -1,7 +1,13 @@
 import re
 
-from security_engine.analyzers.base import Analyzer
-from security_engine.models import AnalysisInput
+from models import AnalysisInput
+from analyzers.base import Analyzer
+
+
+URL_PATTERN = re.compile(r"https?://[^\s]+", re.IGNORECASE)
+IP_PATTERN = re.compile(
+    r"\b(?:\d{1,3}\.){3}\d{1,3}\b"
+)
 
 
 class BasicAnalyzer(Analyzer):
@@ -10,25 +16,28 @@ class BasicAnalyzer(Analyzer):
     def analyze(self, data: AnalysisInput) -> dict:
         content = data.content.lower()
 
+        urls = URL_PATTERN.findall(data.content)
+        ip_addresses = IP_PATTERN.findall(data.content)
+
         return {
             "content_length": len(data.content),
 
+            # Extracted IOC values
+            "urls": urls,
+            "ip_addresses": ip_addresses,
+
             # URL / phishing indicators
-            "contains_url": (
-                "http://" in content
-                or "https://" in content
-            ),
+            "contains_url": bool(urls),
+
             "contains_ip_url": any(
-                marker in content
-                for marker in (
-                    "http://192.",
-                    "http://10.",
-                    "http://172.",
-                    "https://192.",
-                    "https://10.",
-                    "https://172.",
+                re.search(
+                    r"https?://(?:\d{1,3}\.){3}\d{1,3}(?:[/:]|$)",
+                    url,
+                    re.IGNORECASE,
                 )
+                for url in urls
             ),
+
             "contains_url_shortener": any(
                 domain in content
                 for domain in (
@@ -40,6 +49,7 @@ class BasicAnalyzer(Analyzer):
                     "cutt.ly/",
                 )
             ),
+
             "contains_suspicious_tld": any(
                 tld in content
                 for tld in (

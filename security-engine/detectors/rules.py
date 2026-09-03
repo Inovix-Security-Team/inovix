@@ -21,22 +21,28 @@ class RuleBasedDetector(Detector):
             )
 
         if analysis.get("contains_url"):
+            urls = analysis.get("urls", [])
+
             findings.append(
                 Finding(
                     rule_id="URL_PRESENT",
                     severity="LOW",
                     reason="URL detected in input.",
                     indicator="url",
+                    value=urls[0] if urls else None,
                 )
             )
 
         if analysis.get("contains_ip_url"):
+            ip_addresses = analysis.get("ip_addresses", [])
+
             findings.append(
                 Finding(
                     rule_id="IP_BASED_URL",
                     severity="HIGH",
                     reason="URL uses a direct IP address instead of a domain.",
                     indicator="ip_based_url",
+                    value=ip_addresses[0] if ip_addresses else None,
                 )
             )
 

@@ -1,5 +1,3 @@
-from unittest import result
-
 import pytest
 
 from security_engine.engine import SecurityEngine
@@ -235,7 +233,6 @@ def test_multiple_new_security_findings(
     assert "CREDENTIAL_REQUEST" in rule_ids
     assert "FINANCIAL_REQUEST" in rule_ids
 
-<<<<<<< HEAD
 def test_ip_based_url_detection(engine: SecurityEngine) -> None:
     result = engine.analyze(
         "Please login at http://192.168.1.10/login"
@@ -251,11 +248,6 @@ def test_url_shortener_detection(engine: SecurityEngine) -> None:
         "Open this link: https://bit.ly/login"
     )
     
-    assert "URL_SHORTENER" in [
-        finding.rule_id for finding in result.findings
-    ]
-
-
     assert "URL_SHORTENER" in [
         finding.rule_id for finding in result.findings
     ]
@@ -334,8 +326,6 @@ def test_multiple_advanced_indicators_correlate(
     assert "THREAT_LANGUAGE" in rule_ids
     assert "CREDENTIAL_REQUEST" in rule_ids
 
-=======
->>>>>>> 73fd397 (feat: add advanced security detection)
 
 def test_benign_message_has_no_advanced_findings(
     engine: SecurityEngine,
@@ -346,14 +336,7 @@ def test_benign_message_has_no_advanced_findings(
 
     assert result.verdict == "SAFE"
     assert result.risk_score == 0
-<<<<<<< HEAD
-<<<<<<< HEAD
     assert result.findings == []
-=======
-
-    assert result.findings == []
-assert result.findings == []
->>>>>>> c73b027 (files added)
 
 def test_ip_based_url_finding_contains_value(
     engine: SecurityEngine,
@@ -384,9 +367,3 @@ def test_url_finding_contains_value(
     )
 
     assert finding.value == "https://example.com/login"
-<<<<<<< HEAD
-=======
-    assert result.findings == []
->>>>>>> 73fd397 (feat: add advanced security detection)
-=======
->>>>>>> c73b027 (files added)
