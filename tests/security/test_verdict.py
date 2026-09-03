@@ -1,6 +1,6 @@
 import pytest
 
-from utils.verdict import generate_verdict
+from security_engine.utils.verdict import generate_verdict
 
 
 @pytest.mark.parametrize(

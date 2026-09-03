@@ -3,8 +3,8 @@ from pathlib import Path
 
 import pytest
 
-from engine import SecurityEngine
-from exceptions import InvalidInputError
+from security_engine.engine import SecurityEngine
+from security_engine.exceptions import InvalidInputError
 
 
 @pytest.fixture

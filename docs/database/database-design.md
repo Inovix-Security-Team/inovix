@@ -38,4 +38,3 @@ v                                 v
 ## Security & Integrity Constraints
 * **Foreign Keys:** Enforced at runtime on every connection via `PRAGMA foreign_keys = ON;`.
 * **Parameterized Queries:** All queries execute via bound parameters (`?`) to prevent SQL injection vulnerabilities.
-

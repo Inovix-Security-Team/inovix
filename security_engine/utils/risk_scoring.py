@@ -1,5 +1,4 @@
-from models import Finding
-
+from security_engine.models import Finding
 
 SEVERITY_WEIGHTS = {
     "LOW": 20,

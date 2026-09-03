@@ -1,7 +1,7 @@
 import re
 
-from analyzers.base import Analyzer
-from models import AnalysisInput
+from security_engine.analyzers.base import Analyzer
+from security_engine.models import AnalysisInput
 
 
 URL_PATTERN = re.compile(r"https?://[^\s]+", re.IGNORECASE)
@@ -19,8 +19,37 @@ class BasicAnalyzer(Analyzer):
         urls = URL_PATTERN.findall(data.content)
         ip_addresses = IP_PATTERN.findall(data.content)
 
+        # Structured security-event metadata.
+        # getattr() keeps compatibility with the older AnalysisInput
+        # used by the existing detection tests.
+        metadata = getattr(data, "metadata", {}) or {}
+        event = metadata.get("event", {})
+
+        event_type = str(
+            event.get(
+                "event_type",
+                getattr(data, "event_type", ""),
+            )
+        ).lower()
+
+        attempts = event.get("attempts", 0)
+
+        try:
+            attempts = int(attempts)
+        except (TypeError, ValueError):
+            attempts = 0
+
         return {
             "content_length": len(data.content),
+
+            # Structured security-event indicators
+            "is_failed_login": event_type == "failed_login",
+            "failed_login_attempts": attempts,
+            "is_brute_force": (
+                event_type == "failed_login"
+                and attempts >= 5
+            ),
+            "is_port_scan": event_type == "port_scan",
 
             # Extracted IOC values
             "urls": urls,

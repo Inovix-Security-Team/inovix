@@ -1,7 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models import AnalysisInput
-
+from security_engine.models import AnalysisInput
 
 class Analyzer(ABC):
     """Interface for all security analyzers."""

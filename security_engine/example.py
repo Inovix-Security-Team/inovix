@@ -1,6 +1,6 @@
 import json
 
-from engine import SecurityEngine
+from security_engine.engine import SecurityEngine
 
 
 def main() -> None:

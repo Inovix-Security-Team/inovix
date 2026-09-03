@@ -1,6 +1,6 @@
 from typing import Any
 
-from exceptions import InvalidInputError
+from security_engine.exceptions import InvalidInputError
 
 
 def validate_input(data: Any) -> None:
@@ -21,11 +21,15 @@ def validate_input(data: Any) -> None:
         if not data:
             raise InvalidInputError("Structured event cannot be empty.")
 
-        if "event_type" not in data:
+        if not isinstance(data.get("event_type"), str):
             raise InvalidInputError(
-                "Structured event must contain an event_type."
+                "Structured event must contain a valid event_type."
             )
 
+        if not data["event_type"].strip():
+            raise InvalidInputError(
+                "Structured event event_type cannot be empty."
+            )
         return
 
     raise InvalidInputError(

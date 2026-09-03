@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from models import Finding
+from security_engine.models import Finding
 
 
 class ThreatIntelligenceProvider(ABC):

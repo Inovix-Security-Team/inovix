@@ -1,8 +1,11 @@
 import sqlite3
 from datetime import datetime
 
-from threat_intelligence.models import IOC, IOCStatus, IOCType
-
+from security_engine.threat_intelligence.models import (
+    IOC,
+    IOCStatus,
+    IOCType,
+)
 
 class LocalIOCStore:
     """SQLite-backed local threat-intelligence IOC storage."""
@@ -11,7 +14,7 @@ class LocalIOCStore:
         self.database_path = database_path
 
         # Keep one connection alive for in-memory databases.
-        self._connection = sqlite3.connect(self.database_path)
+        self._connection = sqlite3.connect(self.database_path, check_same_thread=False)
 
         self._initialize()
 

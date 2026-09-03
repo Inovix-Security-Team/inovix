@@ -1,5 +1,5 @@
-from detectors.base import Detector
-from models import Finding
+from security_engine.detectors.base import Detector
+from security_engine.models import Finding
 
 
 class RuleBasedDetector(Detector):
@@ -9,6 +9,34 @@ class RuleBasedDetector(Detector):
         """Generate explainable security findings."""
 
         findings: list[Finding] = []
+        if analysis.get("is_brute_force"):
+            findings.append(
+                Finding(
+                    rule_id="BRUTE_FORCE_ACTIVITY",
+                    severity="HIGH",
+                    reason=(
+                        "Repeated failed login attempts indicate "
+                        "possible brute-force activity."
+                    ),
+                    indicator="brute_force",
+                    value=str(
+                        analysis.get("failed_login_attempts", 0)
+                    ),
+                )
+            )
+
+        if analysis.get("is_port_scan"):
+            findings.append(
+                Finding(
+                    rule_id="PORT_SCAN_ACTIVITY",
+                    severity="HIGH",
+                    reason=(
+                        "Port scanning activity was detected "
+                        "in the security event."
+                    ),
+                    indicator="port_scan",
+                )
+            )
 
         if analysis.get("contains_suspicious_keyword"):
             findings.append(

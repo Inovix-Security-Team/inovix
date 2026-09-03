@@ -1,8 +1,8 @@
 import pytest
 
-from engine import SecurityEngine
-from exceptions import InvalidInputError
-from models import (
+from security_engine.engine import SecurityEngine
+from security_engine.exceptions import InvalidInputError
+from security_engine.models import (
     Finding,
     ImpactResult,
     NormalizedEvent,
@@ -11,23 +11,52 @@ from models import (
     SecurityEvent,
     VerificationResult,
 )
-from utils.normalization import normalize_input
-from utils.risk_scoring import calculate_risk_score
-from utils.verdict import generate_verdict
+
+from security_engine.utils.normalization import normalize_input
+from security_engine.utils.risk_scoring import calculate_risk_score
+from security_engine.utils.verdict import generate_verdict
 
 
 @pytest.fixture
 def engine() -> SecurityEngine:
     return SecurityEngine()
+@pytest.fixture
+def normalized_event() -> NormalizedEvent:
+    return NormalizedEvent(
+        content="Hello Inovix",
+        source="local-test",
+        event_type="text",
+    )
+@pytest.fixture
+def finding() -> Finding:
+    return Finding(
+        rule_id="TEST_RULE",
+        severity="HIGH",
+        reason="Test security finding.",
+        indicator="test_indicator",
+    )
+@pytest.fixture
+def risk_result() -> RiskResult:
+    return RiskResult(
+        score=70,
+        level="SUSPICIOUS",
+        reasons=["Suspicious activity detected."],
+    )
+@pytest.fixture
+def impact_result() -> ImpactResult:
+    return ImpactResult()
 
-from models import (
-    ImpactResult,
-    NormalizedEvent,
-    ResponseDecision,
-    RiskResult,
+@pytest.fixture
+def response_decision() -> ResponseDecision:
+    return ResponseDecision()
+
+@pytest.fixture
+def verification_result() -> VerificationResult:
+    return VerificationResult()
+
     SecurityEvent,
     VerificationResult,
-)
+
 
 
 def test_security_event_defaults() -> None:
@@ -253,7 +282,6 @@ def test_ip_based_url_detection(engine: SecurityEngine) -> None:
     assert "IP_BASED_URL" in [
         finding.rule_id for finding in result.findings
     ]
-
 
 def test_url_shortener_detection(engine: SecurityEngine) -> None:
     result = engine.analyze(
