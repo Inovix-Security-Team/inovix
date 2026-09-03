@@ -233,6 +233,7 @@ def test_multiple_new_security_findings(
     assert "CREDENTIAL_REQUEST" in rule_ids
     assert "FINANCIAL_REQUEST" in rule_ids
 
+<<<<<<< HEAD
 def test_ip_based_url_detection(engine: SecurityEngine) -> None:
     result = engine.analyze(
         "Please login at http://192.168.1.10/login"
@@ -331,6 +332,8 @@ def test_multiple_advanced_indicators_correlate(
     assert "THREAT_LANGUAGE" in rule_ids
     assert "CREDENTIAL_REQUEST" in rule_ids
 
+=======
+>>>>>>> 73fd397 (feat: add advanced security detection)
 
 def test_benign_message_has_no_advanced_findings(
     engine: SecurityEngine,
@@ -341,6 +344,7 @@ def test_benign_message_has_no_advanced_findings(
 
     assert result.verdict == "SAFE"
     assert result.risk_score == 0
+<<<<<<< HEAD
     assert result.findings == []
 
 def test_ip_based_url_finding_contains_value(
@@ -372,3 +376,6 @@ def test_url_finding_contains_value(
     )
 
     assert finding.value == "https://example.com/login"
+=======
+    assert result.findings == []
+>>>>>>> 73fd397 (feat: add advanced security detection)

@@ -1,7 +1,7 @@
 import pytest
 
-from models import Finding
-from utils.risk_scoring import calculate_risk_score
+from security_engine.models import Finding
+from security_engine.utils.risk_scoring import calculate_risk_score
 
 
 def make_finding(severity: str) -> Finding:
