@@ -1,3 +1,5 @@
+from typing import Any
+
 from security_engine.analyzers.basic import BasicAnalyzer
 from security_engine.detectors.rules import RuleBasedDetector
 from security_engine.exceptions import SecurityEngineError
