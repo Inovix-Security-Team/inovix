@@ -4,8 +4,6 @@ from typing import Any
 
 @dataclass
 class SecurityEvent:
-    """Raw security event submitted to the engine."""
-
     content: str
     source: str = "unknown"
     event_type: str = "text"
@@ -14,8 +12,6 @@ class SecurityEvent:
 
 @dataclass
 class NormalizedEvent:
-    """Validated and normalized event used internally."""
-
     content: str
     source: str
     event_type: str
@@ -24,8 +20,6 @@ class NormalizedEvent:
 
 @dataclass
 class Finding:
-    """A single explainable security finding."""
-
     rule_id: str
     severity: str
     reason: str
@@ -44,8 +38,6 @@ class Finding:
 
 @dataclass
 class RiskResult:
-    """Normalized risk assessment."""
-
     score: int
     level: str
     reasons: list[str] = field(default_factory=list)
@@ -60,8 +52,6 @@ class RiskResult:
 
 @dataclass
 class ImpactResult:
-    """Impact assessment prepared for future expansion."""
-
     level: str = "UNKNOWN"
     reasons: list[str] = field(default_factory=list)
 
@@ -74,12 +64,6 @@ class ImpactResult:
 
 @dataclass
 class ResponseDecision:
-    """Safe response recommendation.
-
-    Actual containment/remediation is intentionally not executed
-    by the foundation engine.
-    """
-
     action: str = "NO_ACTION"
     reason: str = "No response action required."
 
@@ -92,8 +76,6 @@ class ResponseDecision:
 
 @dataclass
 class VerificationResult:
-    """Verification result for a response decision."""
-
     verified: bool = True
     status: str = "NOT_REQUIRED"
     details: str = "No response action was executed."
@@ -108,8 +90,6 @@ class VerificationResult:
 
 @dataclass
 class SecurityResult:
-    """Final structured result returned by the security engine."""
-
     verdict: str
     risk_score: int
     reasons: list[str] = field(default_factory=list)
@@ -122,8 +102,6 @@ class SecurityResult:
 
     @property
     def status(self) -> str:
-        """Backward-compatible status alias for legacy consumers."""
-
         if self.verdict == "SAFE":
             return "SAFE"
 
@@ -135,9 +113,98 @@ class SecurityResult:
         if self.verdict == "MALICIOUS":
             return "HIGH"
 
+        if self.verdict == "REJECTED":
+            return "REJECTED"
+
         return "UNKNOWN"
 
+    def __getitem__(self, key: str) -> Any:
+        """Support dictionary-style result access."""
+
+        if key == "verdict":
+            return self.verdict
+
+        if key == "status":
+            return self.status
+
+        if key == "risk_score":
+            return self.risk_score
+
+        if key == "reasons":
+            return self.reasons
+
+        if key == "indicators":
+            return self.indicators
+
+        if key == "findings":
+            return self.findings
+
+        if key == "risk":
+            return self.risk
+
+        if key == "impact":
+            return self.impact
+
+        if key == "response":
+            return self.response
+
+        if key == "verification":
+            return self.verification
+
+        if key == "valid":
+            return self.verdict not in {
+                "UNKNOWN",
+                "REJECTED",
+            }
+
+        if key == "error":
+            if self.verdict == "REJECTED":
+                return (
+                    self.reasons[0]
+                    if self.reasons
+                    else "Input rejected."
+                )
+
+            return None
+
+        raise KeyError(key)
+
+    def get(
+        self,
+        key: str,
+        default: Any = None,
+    ) -> Any:
+        """Dictionary-compatible get method."""
+
+        try:
+            return self[key]
+        except KeyError:
+            return default
+
+    def __contains__(self, key: object) -> bool:
+        """Support dictionary-style membership checks."""
+
+        if not isinstance(key, str):
+            return False
+
+        return key in {
+            "verdict",
+            "status",
+            "risk_score",
+            "reasons",
+            "indicators",
+            "findings",
+            "risk",
+            "impact",
+            "response",
+            "verification",
+            "valid",
+            "error",
+        }
+
     def to_dict(self) -> dict[str, Any]:
+        """Convert the security result to a dictionary."""
+
         return {
             "verdict": self.verdict,
             "status": self.status,
@@ -171,15 +238,11 @@ class SecurityResult:
         }
 
 
-# Backward-compatible alias from the earlier foundation.
 AnalysisInput = NormalizedEvent
 
 
-# Backward-compatible result from TASK-001.
 @dataclass
 class AnalysisResult:
-    """Backward-compatible TASK-001 result."""
-
     status: str
     risk_score: int
     reasons: list[str] = field(default_factory=list)

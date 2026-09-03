@@ -14,7 +14,6 @@ from security_engine.utils.validation import validate_input
     ],
 )
 def test_validation_valid_inputs(valid_input):
-    # validate_input succeeds without returning an error.
     assert validate_input(valid_input) is None
 
 

@@ -17,10 +17,16 @@ from security_engine.utils.verdict import generate_verdict
         (100, "MALICIOUS"),
     ],
 )
-def test_verdict_deterministic_mapping(risk_score, expected_verdict):
+def test_verdict_deterministic_mapping(
+    risk_score,
+    expected_verdict,
+):
     assert generate_verdict(risk_score) == expected_verdict
 
 
-@pytest.mark.parametrize("risk_score", [-1, 101, 150])
+@pytest.mark.parametrize(
+    "risk_score",
+    [-1, 101, 150],
+)
 def test_verdict_out_of_range(risk_score):
     assert generate_verdict(risk_score) == "UNKNOWN"

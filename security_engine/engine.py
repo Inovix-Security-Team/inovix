@@ -19,6 +19,7 @@ from security_engine.utils.risk_scoring import calculate_risk_score
 from security_engine.utils.validation import validate_input
 from security_engine.utils.verdict import generate_verdict
 
+
 class SecurityEngine:
     """Core modular security detection pipeline."""
 
@@ -151,6 +152,45 @@ class SecurityEngine:
                 f"Security analysis failed: {exc}"
             ) from exc
 
+    def analyze_event(
+        self,
+        event: dict[str, Any],
+    ) -> SecurityResult:
+        """Analyze a legacy structured security event.
+
+        This compatibility adapter routes structured events through
+        the same modular analysis pipeline used by `analyze`.
+        """
+
+        try:
+            return self.analyze(event)
+
+        except SecurityEngineError as exc:
+            return SecurityResult(
+                verdict="REJECTED",
+                risk_score=0,
+                reasons=[str(exc)],
+                indicators=[],
+                findings=[],
+                risk=RiskResult(
+                    score=0,
+                    level="REJECTED",
+                    reasons=[str(exc)],
+                ),
+                impact=ImpactResult(
+                    level="UNKNOWN",
+                    reasons=["Input was rejected by the security engine."],
+                ),
+                response=ResponseDecision(
+                    action="NO_ACTION",
+                    reason="Rejected input was not processed.",
+                ),
+                verification=VerificationResult(
+                    verified=False,
+                    status="NOT_EXECUTED",
+                    details="No response action was executed.",
+                ),
+            )
     def analyze_legacy(
         self,
         content: str,
