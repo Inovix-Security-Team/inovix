@@ -1,4 +1,4 @@
-from app.schemas.analysis import AnalyzeRequest, AnalyzeResponse
+﻿from backend.app.schemas.analysis import AnalyzeRequest, AnalyzeResponse
 from security_engine.engine import SecurityEngine
 
 

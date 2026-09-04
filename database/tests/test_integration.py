@@ -1,6 +1,6 @@
 import pytest
 import uuid
-from engine import SecurityEngine
+from security_engine.engine import SecurityEngine
 from database.connection import get_db_connection
 from database.schema import initialize_schema
 from database.models import EventRecord, FindingRecord, RiskAssessmentRecord
