@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
 
-from app.api.v1.router import api_router
-from app.core.config import settings
-from app.core.errors import validation_exception_handler
+from backend.app.api.v1.router import api_router
+from backend.app.core.config import settings
+from backend.app.core.errors import validation_exception_handler
 
 
 app = FastAPI(
