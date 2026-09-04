@@ -5,24 +5,21 @@ router = APIRouter()
 
 @router.post("/analyze")
 async def analyze_email(file: UploadFile = File(...)):
-    # Check file was provided
+
     if not file.filename:
         raise HTTPException(
             status_code=400,
             detail="No file provided"
         )
 
-    # Only allow .eml files
     if not file.filename.lower().endswith(".eml"):
         raise HTTPException(
             status_code=400,
             detail="Only .eml files are supported"
         )
 
-    # Read uploaded file
     contents = await file.read()
 
-    # Check empty file
     if not contents:
         raise HTTPException(
             status_code=400,
