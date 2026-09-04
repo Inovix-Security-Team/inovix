@@ -1,6 +1,6 @@
 import pytest
 import uuid
-from engine import SecurityEngine
+from security_engine.engine import SecurityEngine
 from database.connection import get_db_connection
 from database.schema import initialize_schema
 from database.models import EventRecord, FindingRecord, RiskAssessmentRecord
@@ -23,3 +23,4 @@ def test_security_engine_to_database_flow():
     assert event_repo.get_event(event_id) is not None
     assert risk_repo.get_risk_for_event(event_id).score == 75
     conn.close()
+
