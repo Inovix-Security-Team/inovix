@@ -11,6 +11,10 @@ from database.models import (
 )
 from database.service import DatabaseService
 
+from security_engine.models import Finding
+from security_engine.utils.risk_scoring import calculate_risk_score
+from security_engine.utils.verdict import generate_verdict
+
 from email_security.email_forensics.email_forensics import (
     EmailForensicsAnalyzer,
 )
@@ -42,10 +46,11 @@ class EmailIntelligenceService:
             -> IOC extraction
             -> threat detection
             -> correlation
+            -> existing risk engine
             -> unified result
 
-    Existing threat detection, risk scoring, and verdict generation
-    remain responsible for the base SecurityResult.
+    Existing parser, forensics, IOC extraction, threat detection,
+    risk scoring, and verdict generation are reused.
     """
 
     def __init__(
@@ -96,6 +101,8 @@ class EmailIntelligenceService:
     ) -> EmailIntelligenceResult:
         """
         Analyze an already-parsed email.
+
+        Precomputed forensic and IOC results are reused when supplied.
         """
 
         supplied_forensic = forensic_result is not None
@@ -142,6 +149,22 @@ class EmailIntelligenceService:
             if ioc.value not in indicators:
                 indicators.append(ioc.value)
 
+        # Correlations are converted into risk findings and passed
+        # through the existing risk engine. This keeps risk scoring
+        # and verdict generation centralized.
+        risk_findings = findings + [
+            self._correlation_to_finding(correlation)
+            for correlation in correlations
+            if correlation.severity
+        ]
+
+        risk_score = calculate_risk_score(
+            risk_findings
+        )
+        verdict = generate_verdict(
+            risk_score
+        )
+
         confidence = self._calculate_confidence(
             evidence=evidence,
             correlations=list(correlations),
@@ -149,7 +172,6 @@ class EmailIntelligenceService:
 
         provenance = EmailProvenance(
             stages=[
-                "parser",
                 "forensics",
                 "ioc_extraction",
                 "threat_detection",
@@ -175,8 +197,8 @@ class EmailIntelligenceService:
             )
 
         return EmailIntelligenceResult(
-            verdict=security_result.verdict,
-            risk_score=security_result.risk_score,
+            verdict=verdict,
+            risk_score=risk_score,
             confidence=confidence,
             reasons=reasons,
             findings=findings,
@@ -184,6 +206,25 @@ class EmailIntelligenceService:
             correlations=list(correlations),
             indicators=indicators,
             provenance=provenance,
+        )
+
+    @staticmethod
+    def _correlation_to_finding(
+        correlation,
+    ) -> Finding:
+        """
+        Adapt a unified correlation into the existing Finding contract.
+
+        This allows correlation signals to participate in the existing
+        risk-scoring engine without introducing a second scoring model.
+        """
+
+        return Finding(
+            rule_id=correlation.rule_id,
+            severity=correlation.severity,
+            reason=correlation.description,
+            indicator=correlation.rule_id,
+            value=correlation.title,
         )
 
     def persist(
@@ -293,6 +334,7 @@ class EmailIntelligenceService:
         if score <= 69:
             return "MEDIUM"
         return "HIGH"
+
     def analyze_raw(
         self,
         raw_email: str | bytes,
@@ -325,6 +367,10 @@ class EmailIntelligenceService:
         result = self.analyze(email)
 
         result.provenance.parser_used = True
+        result.provenance.stages.insert(
+            0,
+            "parser",
+        )
 
         return result
 

@@ -4,7 +4,10 @@ from typing import Iterable
 
 from security_engine.models import Finding
 
-from email_security.email_forensics.models import EmailForensicResult
+from email_security.email_forensics.models import (
+    EmailForensicResult,
+    ForensicEvidence,
+)
 from email_security.ioc.models import (
     EmailIOCExtractionResult,
     ExtractionConfidence,
@@ -43,7 +46,10 @@ class EmailCorrelationEngine:
         if identity_auth is not None:
             correlations.append(identity_auth)
 
-        phishing = self._phishing_correlation(findings, evidence)
+        phishing = self._phishing_correlation(
+            findings=findings,
+            evidence=evidence,
+        )
         if phishing is not None:
             correlations.append(phishing)
 
@@ -97,7 +103,10 @@ class EmailCorrelationEngine:
                     EmailEvidence(
                         evidence_id=f"E{counter:04d}",
                         source="forensics",
-                        category=self._forensic_category(forensic),
+                        category=self._forensic_category(
+                            forensic,
+                            forensic_result,
+                        ),
                         description=forensic.reason,
                         value=forensic.raw_value,
                         confidence=1.0,
@@ -118,11 +127,16 @@ class EmailCorrelationEngine:
                         category=ioc.ioc_type.value,
                         description=f"Extracted {ioc.ioc_type.value} IOC",
                         value=ioc.value,
-                        confidence=self._ioc_confidence(ioc.confidence),
+                        confidence=self._ioc_confidence(
+                            ioc.confidence
+                        ),
                         metadata={
                             "occurrence_count": len(ioc.occurrences),
                             "extraction_confidence": ioc.confidence.value,
-                            "sources": [source.value for source in ioc.sources],
+                            "sources": [
+                                source.value
+                                for source in ioc.sources
+                            ],
                             "locations": list(ioc.locations),
                         },
                     )
@@ -132,41 +146,25 @@ class EmailCorrelationEngine:
         return tuple(evidence)
 
     @staticmethod
-    def _forensic_category(forensic_evidence: object) -> str:
+    def _forensic_category(
+        forensic_evidence: ForensicEvidence,
+        forensic_result: EmailForensicResult,
+    ) -> str:
         """
-        Preserve recognizable forensic signal categories when available.
-
-        The forensic analyzer records authentication anomalies such as
-        SPF_FAILURE, DKIM_FAILURE and DMARC_FAILURE. Keeping those categories
-        allows the correlation layer to combine them with identity anomalies.
+        Resolve a forensic evidence category from structured
+        ForensicIndicator.code values.
         """
-        source = getattr(forensic_evidence, "source", "")
-        raw_value = getattr(forensic_evidence, "raw_value", "")
-        reason = getattr(forensic_evidence, "reason", "")
 
-        text = " ".join(
-            str(value)
-            for value in (source, raw_value, reason)
-            if value
-        ).upper()
-
-        for category in (
-            "SPF_FAILURE",
-            "DKIM_FAILURE",
-            "DMARC_FAILURE",
-            "AUTHENTICATION_EVIDENCE_MISSING",
-            "FROM_REPLY_TO_MISMATCH",
-            "FROM_RETURN_PATH_MISMATCH",
-            "MALFORMED_RECEIVED_HEADER",
-            "PRIVATE_OR_RESERVED_RECEIVED_IP",
-        ):
-            if category in text:
-                return category
+        for indicator in forensic_result.anomalies:
+            if forensic_evidence in indicator.evidence:
+                return indicator.code
 
         return "FORENSIC_EVIDENCE"
 
     @staticmethod
-    def _ioc_confidence(confidence: ExtractionConfidence) -> float:
+    def _ioc_confidence(
+        confidence: ExtractionConfidence,
+    ) -> float:
         if confidence == ExtractionConfidence.HIGH:
             return 1.0
         if confidence == ExtractionConfidence.MEDIUM:
@@ -385,18 +383,50 @@ class EmailCorrelationEngine:
         ioc_result: EmailIOCExtractionResult | None,
         evidence: tuple[EmailEvidence, ...],
     ) -> EmailCorrelation | None:
+        """Correlate a suspicious URL with the exact extracted URL IOC."""
+
         if ioc_result is None or not ioc_result.iocs:
             return None
 
-        suspicious_url = self._has_finding(
-            findings,
-            {
-                "SUSPICIOUS_URL",
-            },
-        )
+        suspicious_url_findings = [
+            finding
+            for finding in findings
+            if finding.rule_id == "SUSPICIOUS_URL"
+            and finding.indicator == "suspicious_url"
+            and finding.value
+        ]
 
-        if not suspicious_url:
+        if not suspicious_url_findings:
             return None
+
+        url_ioc_values = {
+            ioc.value
+            for ioc in ioc_result.iocs
+            if ioc.ioc_type.value == "URL"
+        }
+
+        matching_findings = [
+            finding
+            for finding in suspicious_url_findings
+            if finding.value in url_ioc_values
+        ]
+
+        if not matching_findings:
+            return None
+
+        matching_value = matching_findings[0].value
+
+        evidence_ids = (
+            self._matching_evidence_ids(
+                evidence,
+                categories={"SUSPICIOUS_URL"},
+            )
+            + self._matching_evidence_ids(
+                evidence,
+                categories={"URL"},
+                value=matching_value,
+            )
+        )
 
         return EmailCorrelation(
             correlation_id="C0004",
@@ -404,17 +434,16 @@ class EmailCorrelationEngine:
             title="Suspicious URL with extracted IOC",
             description=(
                 "Threat detection identified a suspicious URL and the IOC "
-                "extraction layer independently preserved the URL as evidence."
+                "extraction layer independently preserved the same normalized "
+                "URL as evidence."
             ),
-            evidence_ids=self._matching_evidence_ids(
-                evidence,
-                categories={
-                    "SUSPICIOUS_URL",
-                    "URL",
-                },
-            ),
-            confidence=0.9,
+            evidence_ids=evidence_ids,
+            confidence=0.95,
             severity="HIGH",
+            metadata={
+                "ioc_type": "URL",
+                "ioc_value": matching_value,
+            },
         )
 
     @staticmethod
@@ -422,28 +451,30 @@ class EmailCorrelationEngine:
         findings: tuple[Finding, ...],
         rule_ids: set[str],
     ) -> bool:
-        return any(finding.rule_id in rule_ids for finding in findings)
+        return any(
+            finding.rule_id in rule_ids
+            for finding in findings
+        )
 
     @staticmethod
     def _has_forensic_category(
         forensic_result: EmailForensicResult,
         categories: set[str],
     ) -> bool:
-        for anomaly in forensic_result.anomalies:
-            anomaly_text = str(anomaly).upper()
-
-            if any(category in anomaly_text for category in categories):
-                return True
-
-        return False
+        return any(
+            indicator.code in categories
+            for indicator in forensic_result.anomalies
+        )
 
     @staticmethod
     def _matching_evidence_ids(
         evidence: tuple[EmailEvidence, ...],
         categories: set[str],
+        value: str | None = None,
     ) -> tuple[str, ...]:
         return tuple(
             item.evidence_id
             for item in evidence
             if item.category in categories
+            and (value is None or item.value == value)
         )

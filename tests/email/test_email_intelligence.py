@@ -267,7 +267,6 @@ def test_provenance_contains_pipeline_stages():
     )
 
     assert result.provenance.stages == [
-        "parser",
         "forensics",
         "ioc_extraction",
         "threat_detection",
