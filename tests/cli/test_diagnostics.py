@@ -69,11 +69,9 @@ def test_directory_available(tmp_path):
 def test_directory_missing(tmp_path):
     service = DiagnosticsService()
 
-    missing_path = tmp_path / "does_not_exist"
-
     result = service.check_directory(
         "Test Directory",
-        missing_path,
+        tmp_path / "missing",
     )
 
     assert result.status == DiagnosticStatus.FAIL
@@ -120,9 +118,9 @@ def test_storage_available(tmp_path):
 def test_storage_missing(tmp_path):
     service = DiagnosticsService()
 
-    missing_path = tmp_path / "storage"
-
-    result = service.check_storage(missing_path)
+    result = service.check_storage(
+        tmp_path / "storage"
+    )
 
     assert result.status == DiagnosticStatus.WARN
 
