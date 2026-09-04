@@ -399,3 +399,273 @@ def test_unified_result_persists_through_database_service():
     )
 
     connection.close()
+def test_real_eml_end_to_end_through_persistence():
+    import sqlite3
+    from pathlib import Path
+
+    from database.schema import initialize_schema
+    from database.service import DatabaseService
+
+    fixture = (
+        Path(__file__).parent
+        / "fixtures"
+        / "suspicious_email.eml"
+    )
+
+    raw_email = fixture.read_bytes()
+
+    service = EmailIntelligenceService()
+
+    # Full pipeline:
+    # raw .eml
+    # -> parser
+    # -> forensics
+    # -> IOC extraction
+    # -> threat detection
+    # -> correlation
+    # -> risk scoring
+    # -> verdict
+    result = service.analyze_raw(raw_email)
+
+    # Parser / provenance
+    assert result.provenance.parser_used is True
+    assert result.provenance.input_type == "raw_eml"
+    assert result.provenance.stages == [
+        "parser",
+        "forensics",
+        "ioc_extraction",
+        "threat_detection",
+        "correlation",
+    ]
+
+    # Forensics
+    assert result.provenance.forensics_used is True
+    assert any(
+        finding.rule_id == "REPLY_TO_MISMATCH"
+        or finding.rule_id == "FROM_REPLY_TO_MISMATCH"
+        for finding in result.findings
+    )
+
+    # IOC extraction
+    assert result.provenance.ioc_extraction_used is True
+    assert "https://evil.example/login" in result.indicators
+
+    # Threat detection
+    assert result.provenance.threat_detection_used is True
+    assert result.findings
+
+    # Correlation
+    assert result.provenance.correlation_used is True
+    correlation_rule_ids = {
+        correlation.rule_id
+        for correlation in result.correlations
+    }
+
+    assert (
+        "SUSPICIOUS_URL_IOC" in correlation_rule_ids
+        or "PHISHING_CAMPAIGN_PATTERN" in correlation_rule_ids
+        or "IDENTITY_AUTH_ANOMALY" in correlation_rule_ids
+    )
+
+    # Correlations must affect the final risk/verdict.
+    assert result.risk_score > 0
+    assert result.verdict in {
+        "SUSPICIOUS",
+        "MALICIOUS",
+    }
+
+    # Unified evidence must be present.
+    assert result.evidence
+
+    evidence_ids = {
+        item.evidence_id
+        for item in result.evidence
+    }
+
+    assert len(evidence_ids) == len(result.evidence)
+
+    # Every correlation must reference evidence that actually exists.
+    for correlation in result.correlations:
+        assert correlation.evidence_ids
+        assert set(correlation.evidence_ids).issubset(
+            evidence_ids
+        )
+
+    # Confidence is independent from risk.
+    assert 0.0 <= result.confidence <= 1.0
+
+    # Persist through the existing DatabaseService.
+    connection = sqlite3.connect(":memory:")
+    connection.row_factory = sqlite3.Row
+    initialize_schema(connection)
+
+    database = DatabaseService(connection)
+
+    parsed_email = service.parser.parse_raw(raw_email)
+
+    saved = service.persist(
+        result,
+        database,
+        event_id="email-int-007-real-e2e",
+        email=parsed_email,
+    )
+
+    assert saved["event"].id == "email-int-007-real-e2e"
+    assert saved["risk"].event_id == "email-int-007-real-e2e"
+    assert saved["risk"].score == result.risk_score
+    assert saved["risk"].verdict == result.verdict
+
+    # Reload from the database and verify the unified intelligence
+    # metadata survived persistence.
+    restored = database.get_analysis(
+        "email-int-007-real-e2e"
+    )
+
+    assert restored is not None
+
+    metadata = restored["event"].metadata
+
+    assert metadata["intelligence_version"] == "EMAIL-INT-007"
+    assert metadata["confidence"] == result.confidence
+    assert metadata["indicators"] == result.indicators
+    assert metadata["reasons"] == result.reasons
+    assert metadata["provenance"] == (
+        result.provenance.to_dict()
+    )
+    assert metadata["evidence"] == [
+        item.to_dict()
+        for item in result.evidence
+    ]
+    assert metadata["correlations"] == [
+        item.to_dict()
+        for item in result.correlations
+    ]
+
+    connection.close()
+def test_phishing_correlation_contributes_to_risk_and_verdict():
+    service = EmailIntelligenceService()
+
+    result = service.analyze(
+        make_email(
+            subject="URGENT account verification",
+            text_body=(
+                "Urgent. Verify your account immediately. "
+                "Send your password and verification code. "
+                "Visit https://bit.ly/account-login"
+            ),
+        )
+    )
+
+    assert any(
+        correlation.rule_id == "PHISHING_CAMPAIGN_PATTERN"
+        for correlation in result.correlations
+    )
+
+    assert result.risk_score >= 80
+    assert result.verdict == "MALICIOUS"
+
+
+def test_identity_auth_correlation_contributes_to_risk_and_verdict():
+    service = EmailIntelligenceService()
+
+    result = service.analyze(
+        make_email(
+            sender="security@example.com",
+            reply_to=["attacker@evil.example"],
+            authentication_headers={
+                "Authentication-Results": [
+                    "mx.example; spf=fail "
+                    "dkim=fail dmarc=fail"
+                ]
+            },
+        )
+    )
+
+    assert any(
+        correlation.rule_id == "IDENTITY_AUTH_ANOMALY"
+        for correlation in result.correlations
+    )
+
+    assert result.risk_score >= 80
+    assert result.verdict == "MALICIOUS"
+
+
+def test_financial_social_engineering_correlation_contributes_to_risk():
+    service = EmailIntelligenceService()
+
+    result = service.analyze(
+        make_email(
+            sender="finance@example.com",
+            reply_to=["attacker@evil.example"],
+            subject="Urgent payment required",
+            text_body=(
+                "Urgent action required. "
+                "Please make payment immediately. "
+                "Send the funds today."
+            ),
+        )
+    )
+
+    assert any(
+        correlation.rule_id
+        == "FINANCIAL_SOCIAL_ENGINEERING_PATTERN"
+        for correlation in result.correlations
+    )
+
+    assert result.risk_score >= 80
+    assert result.verdict == "MALICIOUS"
+
+
+def test_exact_suspicious_url_ioc_correlation_contributes_to_risk():
+    service = EmailIntelligenceService()
+
+    result = service.analyze(
+        make_email(
+            subject="Urgent verification",
+            text_body=(
+                "Urgent. Verify your account immediately: "
+                "https://bit.ly/account-login"
+            ),
+        )
+    )
+
+    assert any(
+        correlation.rule_id == "SUSPICIOUS_URL_IOC"
+        for correlation in result.correlations
+    )
+
+    assert result.risk_score >= 80
+    assert result.verdict == "MALICIOUS"
+def test_correlations_reference_only_existing_evidence():
+    service = EmailIntelligenceService()
+
+    result = service.analyze(
+        make_email(
+            subject="URGENT account verification",
+            text_body=(
+                "Urgent. Verify your account immediately. "
+                "Send your password and verification code. "
+                "Visit https://bit.ly/account-login"
+            ),
+            sender="security@example.com",
+            reply_to=["attacker@evil.example"],
+            authentication_headers={
+                "Authentication-Results": [
+                    "mx.example; spf=fail dkim=fail dmarc=fail"
+                ]
+            },
+        )
+    )
+
+    evidence_ids = {
+        item.evidence_id
+        for item in result.evidence
+    }
+
+    assert evidence_ids
+
+    for correlation in result.correlations:
+        assert correlation.evidence_ids
+        assert set(correlation.evidence_ids).issubset(
+            evidence_ids
+        )

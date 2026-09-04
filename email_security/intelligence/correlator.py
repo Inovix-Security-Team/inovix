@@ -3,6 +3,12 @@ from __future__ import annotations
 from typing import Iterable
 
 from security_engine.models import Finding
+# Deterministic heuristic strength used by correlation rules.
+#
+# This value is NOT a calibrated probability. It represents the internal
+# confidence/strength of a deterministic correlation rule when all required
+# signals are present.
+CORRELATION_HEURISTIC_CONFIDENCE = 0.95
 
 from email_security.email_forensics.models import (
     EmailForensicResult,
@@ -252,7 +258,7 @@ class EmailCorrelationEngine:
                 "email authentication contains one or more failures."
             ),
             evidence_ids=evidence_ids,
-            confidence=0.95,
+            confidence=CORRELATION_HEURISTIC_CONFIDENCE,
             severity="HIGH",
             metadata={
                 "identity_mismatch": True,
@@ -307,7 +313,7 @@ class EmailCorrelationEngine:
                     "SUSPICIOUS_URL",
                 },
             ),
-            confidence=0.95,
+            confidence=CORRELATION_HEURISTIC_CONFIDENCE,
             severity="HIGH",
         )
 
@@ -373,7 +379,7 @@ class EmailCorrelationEngine:
                     "FROM_RETURN_PATH_MISMATCH",
                 },
             ),
-            confidence=0.95,
+            confidence=CORRELATION_HEURISTIC_CONFIDENCE,
             severity="HIGH",
         )
 
@@ -438,7 +444,7 @@ class EmailCorrelationEngine:
                 "URL as evidence."
             ),
             evidence_ids=evidence_ids,
-            confidence=0.95,
+            confidence=CORRELATION_HEURISTIC_CONFIDENCE,
             severity="HIGH",
             metadata={
                 "ioc_type": "URL",

@@ -1,4 +1,6 @@
-from security_engine.models import Finding
+﻿from security_engine.models import Finding
+from typing import Final
+
 
 SEVERITY_WEIGHTS = {
     "LOW": 20,
@@ -8,8 +10,6 @@ SEVERITY_WEIGHTS = {
 }
 
 
-# Findings that describe context rather than independently
-# determining the primary risk level.
 CONTEXTUAL_INDICATORS = {
     "suspicious_keyword",
     "urgency",
@@ -19,15 +19,13 @@ CONTEXTUAL_INDICATORS = {
 }
 
 
+RISK_LEVEL_THRESHOLDS: Final[dict[str, int]] = {
+    "LOW_MAX": 29,
+    "MEDIUM_MAX": 69,
+}
+
+
 def calculate_risk_score(findings: list[Finding]) -> int:
-    """Calculate a normalized 0-100 risk score.
-
-    Primary findings determine the base risk. Contextual findings
-    are retained for explanation but do not independently increase
-    the score. Multiple independent primary findings can escalate
-    the final score to 100.
-    """
-
     if not findings:
         return 0
 
@@ -54,13 +52,23 @@ def calculate_risk_score(findings: list[Finding]) -> int:
         for finding in primary_findings
     )
 
-    # Critical findings are already maximum risk.
     if highest_score >= 100:
         return 100
 
-    # Multiple independent primary findings indicate
-    # correlated malicious activity.
     if len(primary_findings) >= 2:
         return 100
 
     return highest_score
+
+
+def get_risk_level(score: int) -> str:
+    if not 0 <= score <= 100:
+        raise ValueError("score must be between 0 and 100")
+
+    if score <= RISK_LEVEL_THRESHOLDS["LOW_MAX"]:
+        return "LOW"
+
+    if score <= RISK_LEVEL_THRESHOLDS["MEDIUM_MAX"]:
+        return "MEDIUM"
+
+    return "HIGH"

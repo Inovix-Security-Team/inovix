@@ -1,4 +1,4 @@
-﻿from dataclasses import dataclass, field
+from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
 
@@ -66,6 +66,7 @@ class EmailProvenance:
 
     stages: List[str] = field(default_factory=list)
     parser_used: bool = False
+    input_type: str = "parsed_email"
     forensics_used: bool = False
     ioc_extraction_used: bool = False
     threat_detection_used: bool = False
@@ -75,6 +76,7 @@ class EmailProvenance:
         return {
             "stages": list(self.stages),
             "parser_used": self.parser_used,
+            "input_type": self.input_type,
             "forensics_used": self.forensics_used,
             "ioc_extraction_used": self.ioc_extraction_used,
             "threat_detection_used": self.threat_detection_used,

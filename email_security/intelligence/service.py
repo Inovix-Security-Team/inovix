@@ -12,7 +12,10 @@ from database.models import (
 from database.service import DatabaseService
 
 from security_engine.models import Finding
-from security_engine.utils.risk_scoring import calculate_risk_score
+from security_engine.utils.risk_scoring import (
+    calculate_risk_score,
+    get_risk_level,
+)
 from security_engine.utils.verdict import generate_verdict
 
 from email_security.email_forensics.email_forensics import (
@@ -161,9 +164,21 @@ class EmailIntelligenceService:
         risk_score = calculate_risk_score(
             risk_findings
         )
+
         verdict = generate_verdict(
             risk_score
         )
+
+        # Positive authentication evidence can conflict with a
+        # malicious assessment. Keep the result reviewable rather
+        # than returning MALICIOUS blindly.
+        if (
+            self._has_conflicting_positive_authentication(
+                forensic_result
+            )
+            and verdict == "MALICIOUS"
+        ):
+            verdict = "SUSPICIOUS"
 
         confidence = self._calculate_confidence(
             evidence=evidence,
@@ -227,6 +242,50 @@ class EmailIntelligenceService:
             value=correlation.title,
         )
 
+    @staticmethod
+    def _has_conflicting_positive_authentication(
+        forensic_result: EmailForensicResult,
+    ) -> bool:
+        """
+        Detect positive SPF, DKIM, or DMARC authentication evidence.
+
+        A positive authentication result can conflict with an otherwise
+        malicious assessment, so the final verdict is kept reviewable.
+        """
+
+        authentication = getattr(
+            forensic_result,
+            "authentication",
+            None,
+        )
+
+        if authentication is None:
+            return False
+
+        for name in ("spf", "dkim", "dmarc"):
+            result = getattr(
+                authentication,
+                name,
+                None,
+            )
+
+            if result is None:
+                continue
+
+            status = getattr(
+                result,
+                "result",
+                None,
+            )
+
+            if (
+                isinstance(status, str)
+                and status.lower() == "pass"
+            ):
+                return True
+
+        return False
+
     def persist(
         self,
         result: EmailIntelligenceResult,
@@ -247,7 +306,9 @@ class EmailIntelligenceService:
         """
 
         if not event_id or not event_id.strip():
-            raise ValueError("event_id must not be empty")
+            raise ValueError(
+                "event_id must not be empty"
+            )
 
         if email is not None and content_hash is None:
             canonical_content = "|".join(
@@ -268,7 +329,9 @@ class EmailIntelligenceService:
         timestamp = (
             email.date
             if email is not None and email.date
-            else datetime.now(timezone.utc).isoformat()
+            else datetime.now(
+                timezone.utc
+            ).isoformat()
         )
 
         source = (
@@ -280,8 +343,12 @@ class EmailIntelligenceService:
         metadata = {
             "intelligence_version": "EMAIL-INT-007",
             "confidence": result.confidence,
-            "indicators": list(result.indicators),
-            "reasons": list(result.reasons),
+            "indicators": list(
+                result.indicators
+            ),
+            "reasons": list(
+                result.reasons
+            ),
             "evidence": [
                 item.to_dict()
                 for item in result.evidence
@@ -290,8 +357,12 @@ class EmailIntelligenceService:
                 item.to_dict()
                 for item in result.correlations
             ],
-            "provenance": result.provenance.to_dict(),
-            "metadata": dict(result.metadata),
+            "provenance": (
+                result.provenance.to_dict()
+            ),
+            "metadata": dict(
+                result.metadata
+            ),
         }
 
         event = EventRecord(
@@ -317,7 +388,9 @@ class EmailIntelligenceService:
         risk = RiskAssessmentRecord(
             event_id=event_id,
             score=result.risk_score,
-            risk_level=self._risk_level(result.risk_score),
+            risk_level=get_risk_level(
+                result.risk_score
+            ),
             verdict=result.verdict,
         )
 
@@ -326,14 +399,6 @@ class EmailIntelligenceService:
             findings=findings,
             risk=risk,
         )
-
-    @staticmethod
-    def _risk_level(score: int) -> str:
-        if score <= 29:
-            return "LOW"
-        if score <= 69:
-            return "MEDIUM"
-        return "HIGH"
 
     def analyze_raw(
         self,
@@ -367,10 +432,13 @@ class EmailIntelligenceService:
         result = self.analyze(email)
 
         result.provenance.parser_used = True
-        result.provenance.stages.insert(
-            0,
-            "parser",
-        )
+        result.provenance.input_type = "raw_eml"
+
+        if "parser" not in result.provenance.stages:
+            result.provenance.stages.insert(
+                0,
+                "parser",
+            )
 
         return result
 
